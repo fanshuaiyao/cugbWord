@@ -1,2 +1,22 @@
 # cugbWord
 用于格式化中地大（京）的毕业论文格式
+
+## 样式配置
+
+`win32com_demo.py` 现在会从 `style_config.json` 读取样式配置，再将配置应用到 Word 文档的内置样式上。
+
+当前配置文件包含：
+- `document_path`：要处理的 `.docx` 文件路径
+- `styles`：样式列表
+
+每个样式项需要包含：
+- `style_id`：内部标识
+- `builtin_names.english` / `builtin_names.chinese`：Word 内置样式的中英文名称
+- `font`：字体相关配置
+- `paragraph`：段落相关配置
+
+## 扩展方式
+
+如果要新增或调整样式，优先修改 `style_config.json`，不需要改 Python 主流程。
+
+为了兼容不同语言版本的 Word，请为每个内置样式同时提供英文名和中文名。
