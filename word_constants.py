@@ -18,6 +18,9 @@ WD_COLOR_BLACK = 0
 WD_COLOR_INDEX_BLACK = 1
 """Word 黑色字体颜色索引常量值。"""
 
+WD_STYLE_TYPE_PARAGRAPH = 1
+"""Word 段落样式类型常量值。"""
+
 ALIGNMENT_MAP = {
     "left": WD_ALIGN_PARAGRAPH_LEFT,
     "center": WD_ALIGN_PARAGRAPH_CENTER,
