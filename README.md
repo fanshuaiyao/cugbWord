@@ -25,5 +25,16 @@
 - `win32com_demo.py`：主流程入口
 - `style_operations.py`：样式定义更新、直接段落格式覆盖
 - `paragraph_utils.py`：段落文本清洗与前后段落访问
-- `paragraph_rules.py`：标题、图注、表注、图片段落识别
-- `paragraph_processing.py`：遍历段落并应用识别结果
+- `paragraph_rules.py`：标题、图注、表注、图片段落、结构标题识别
+- `paragraph_processing.py`：遍历段落、应用识别结果并执行摘要/关键词内容校验
+
+当前已支持的论文结构识别：
+- 中文摘要
+- 关键词
+- 参考文献
+- 目录
+- 致谢
+- 附录
+
+说明：
+- 当前对 `目录` 只做保守识别和样式入口，不包含自动生成目录、自动更新目录、目录点线和页码对齐优化。

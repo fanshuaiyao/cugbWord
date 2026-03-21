@@ -2,6 +2,10 @@ import re
 
 from paragraph_rules import (
     is_abstract_title_text,
+    is_acknowledgements_title_text,
+    is_appendix_title_text,
+    is_contents_entry_text,
+    is_contents_title_text,
     is_keywords_line_text,
     is_references_title_text,
     match_heading_style_id,
@@ -137,16 +141,37 @@ def append_abstract_validation_issues(
 
 
 
+def finalize_current_block(validation_issues, current_block, abstract_state, doc):
+    """统一收尾当前区块。"""
+    if current_block == "abstract":
+        append_abstract_validation_issues(
+            doc,
+            validation_issues,
+            abstract_state["title_index"],
+            abstract_state["range_start"],
+            abstract_state["range_end"],
+            abstract_state["body_texts"],
+        )
+
+    abstract_state["title_index"] = None
+    abstract_state["range_start"] = None
+    abstract_state["range_end"] = None
+    abstract_state["body_texts"] = []
+
+
+
 def apply_paragraph_styles(doc, style_lookup, style_config_lookup):
     """遍历文档段落并按识别结果应用对应样式，同时返回内容校验结果。"""
     processed_count = 0
     validation_issues = []
     validation_counts = {"abstract_count": 0, "keywords_count": 0}
     current_block = None
-    abstract_title_index = None
-    abstract_range_start = None
-    abstract_range_end = None
-    abstract_body_texts = []
+    abstract_state = {
+        "title_index": None,
+        "range_start": None,
+        "range_end": None,
+        "body_texts": [],
+    }
 
     for index in range(1, doc.Paragraphs.Count + 1):
         paragraph = doc.Paragraphs(index)
@@ -162,43 +187,39 @@ def apply_paragraph_styles(doc, style_lookup, style_config_lookup):
             continue
 
         if is_abstract_title_text(text):
-            if current_block == "abstract":
-                append_abstract_validation_issues(
-                    doc,
-                    validation_issues,
-                    abstract_title_index,
-                    abstract_range_start,
-                    abstract_range_end,
-                    abstract_body_texts,
-                )
-
+            finalize_current_block(validation_issues, current_block, abstract_state, doc)
             current_block = "abstract"
             validation_counts["abstract_count"] += 1
-            abstract_title_index = index
-            abstract_range_start = None
-            abstract_range_end = None
-            abstract_body_texts = []
+            abstract_state["title_index"] = index
             apply_paragraph_style(paragraph, "abstract_title", style_lookup, style_config_lookup)
             processed_count += 1
             continue
 
         if is_references_title_text(text):
-            if current_block == "abstract":
-                append_abstract_validation_issues(
-                    doc,
-                    validation_issues,
-                    abstract_title_index,
-                    abstract_range_start,
-                    abstract_range_end,
-                    abstract_body_texts,
-                )
-                abstract_title_index = None
-                abstract_range_start = None
-                abstract_range_end = None
-                abstract_body_texts = []
-
+            finalize_current_block(validation_issues, current_block, abstract_state, doc)
             current_block = "references"
             apply_paragraph_style(paragraph, "references_title", style_lookup, style_config_lookup)
+            processed_count += 1
+            continue
+
+        if is_contents_title_text(text):
+            finalize_current_block(validation_issues, current_block, abstract_state, doc)
+            current_block = "contents"
+            apply_paragraph_style(paragraph, "contents_title", style_lookup, style_config_lookup)
+            processed_count += 1
+            continue
+
+        if is_acknowledgements_title_text(text):
+            finalize_current_block(validation_issues, current_block, abstract_state, doc)
+            current_block = "acknowledgements"
+            apply_paragraph_style(paragraph, "acknowledgements_title", style_lookup, style_config_lookup)
+            processed_count += 1
+            continue
+
+        if is_appendix_title_text(text):
+            finalize_current_block(validation_issues, current_block, abstract_state, doc)
+            current_block = "appendix"
+            apply_paragraph_style(paragraph, "appendix_title", style_lookup, style_config_lookup)
             processed_count += 1
             continue
 
@@ -206,52 +227,33 @@ def apply_paragraph_styles(doc, style_lookup, style_config_lookup):
             apply_paragraph_style(paragraph, "keywords_line", style_lookup, style_config_lookup)
             validation_counts["keywords_count"] += 1
             append_keywords_validation_issues(validation_issues, index, text)
-
-            if current_block == "abstract":
-                abstract_range_end = paragraph.Range.End
-                append_abstract_validation_issues(
-                    doc,
-                    validation_issues,
-                    abstract_title_index,
-                    abstract_range_start,
-                    abstract_range_end,
-                    abstract_body_texts,
-                )
-                abstract_title_index = None
-                abstract_range_start = None
-                abstract_range_end = None
-                abstract_body_texts = []
-
+            finalize_current_block(validation_issues, current_block, abstract_state, doc)
             current_block = None
+            processed_count += 1
+            continue
+
+        if current_block == "contents" and is_contents_entry_text(text):
+            apply_paragraph_style(paragraph, "contents_entry", style_lookup, style_config_lookup)
             processed_count += 1
             continue
 
         heading_style_id = match_heading_style_id(text)
         if heading_style_id is not None:
-            if current_block == "abstract":
-                append_abstract_validation_issues(
-                    doc,
-                    validation_issues,
-                    abstract_title_index,
-                    abstract_range_start,
-                    abstract_range_end,
-                    abstract_body_texts,
-                )
-                abstract_title_index = None
-                abstract_range_start = None
-                abstract_range_end = None
-                abstract_body_texts = []
-
+            finalize_current_block(validation_issues, current_block, abstract_state, doc)
             current_block = None
             apply_paragraph_style(paragraph, heading_style_id, style_lookup, style_config_lookup)
             processed_count += 1
             continue
 
+        if current_block == "contents":
+            finalize_current_block(validation_issues, current_block, abstract_state, doc)
+            current_block = None
+
         if current_block == "abstract":
-            if abstract_range_start is None:
-                abstract_range_start = paragraph.Range.Start
-            abstract_range_end = paragraph.Range.End
-            abstract_body_texts.append(text)
+            if abstract_state["range_start"] is None:
+                abstract_state["range_start"] = paragraph.Range.Start
+            abstract_state["range_end"] = paragraph.Range.End
+            abstract_state["body_texts"].append(text)
             apply_paragraph_style(paragraph, "abstract_body", style_lookup, style_config_lookup)
             processed_count += 1
             continue
@@ -261,17 +263,18 @@ def apply_paragraph_styles(doc, style_lookup, style_config_lookup):
             processed_count += 1
             continue
 
+        if current_block == "acknowledgements":
+            apply_paragraph_style(paragraph, "acknowledgements_body", style_lookup, style_config_lookup)
+            processed_count += 1
+            continue
+
+        if current_block == "appendix":
+            apply_paragraph_style(paragraph, "appendix_body", style_lookup, style_config_lookup)
+            processed_count += 1
+            continue
+
         apply_paragraph_style(paragraph, "normal", style_lookup, style_config_lookup)
         processed_count += 1
 
-    if current_block == "abstract":
-        append_abstract_validation_issues(
-            doc,
-            validation_issues,
-            abstract_title_index,
-            abstract_range_start,
-            abstract_range_end,
-            abstract_body_texts,
-        )
-
+    finalize_current_block(validation_issues, current_block, abstract_state, doc)
     return processed_count, validation_issues, validation_counts

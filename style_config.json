@@ -282,6 +282,150 @@
         "space_before": 0,
         "space_after": 0
       }
+    },
+    {
+      "style_id": "contents_title",
+      "custom": true,
+      "builtin_names": {
+        "english": "Contents Title",
+        "chinese": "目录标题"
+      },
+      "font": {
+        "name_ascii": "Times New Roman",
+        "name_far_east": "黑体",
+        "size": 15,
+        "bold": false,
+        "color": "black",
+        "color_index": "black"
+      },
+      "paragraph": {
+        "alignment": "center",
+        "outline_level": 1,
+        "first_line_indent_chars": 0,
+        "line_spacing_rule": "1.5_lines",
+        "space_before": 0,
+        "space_after": 0
+      }
+    },
+    {
+      "style_id": "contents_entry",
+      "custom": true,
+      "builtin_names": {
+        "english": "Contents Entry",
+        "chinese": "目录条目"
+      },
+      "font": {
+        "name_ascii": "Times New Roman",
+        "name_far_east": "宋体",
+        "size": 12,
+        "bold": false,
+        "color": "black",
+        "color_index": "black"
+      },
+      "paragraph": {
+        "alignment": "left",
+        "outline_level": 10,
+        "first_line_indent_chars": 0,
+        "line_spacing_rule": "1.5_lines",
+        "space_before": 0,
+        "space_after": 0
+      }
+    },
+    {
+      "style_id": "acknowledgements_title",
+      "custom": true,
+      "builtin_names": {
+        "english": "Acknowledgements Title",
+        "chinese": "致谢标题"
+      },
+      "font": {
+        "name_ascii": "Times New Roman",
+        "name_far_east": "黑体",
+        "size": 15,
+        "bold": false,
+        "color": "black",
+        "color_index": "black"
+      },
+      "paragraph": {
+        "alignment": "center",
+        "outline_level": 1,
+        "first_line_indent_chars": 0,
+        "line_spacing_rule": "1.5_lines",
+        "space_before": 0,
+        "space_after": 0
+      }
+    },
+    {
+      "style_id": "acknowledgements_body",
+      "custom": true,
+      "builtin_names": {
+        "english": "Acknowledgements Body",
+        "chinese": "致谢正文"
+      },
+      "font": {
+        "name_ascii": "Times New Roman",
+        "name_far_east": "宋体",
+        "size": 12,
+        "bold": false,
+        "color": "black",
+        "color_index": "black"
+      },
+      "paragraph": {
+        "alignment": "justify",
+        "outline_level": 10,
+        "first_line_indent_chars": 2,
+        "line_spacing_rule": "1.5_lines",
+        "space_before": 0,
+        "space_after": 0
+      }
+    },
+    {
+      "style_id": "appendix_title",
+      "custom": true,
+      "builtin_names": {
+        "english": "Appendix Title",
+        "chinese": "附录标题"
+      },
+      "font": {
+        "name_ascii": "Times New Roman",
+        "name_far_east": "黑体",
+        "size": 15,
+        "bold": false,
+        "color": "black",
+        "color_index": "black"
+      },
+      "paragraph": {
+        "alignment": "center",
+        "outline_level": 1,
+        "first_line_indent_chars": 0,
+        "line_spacing_rule": "1.5_lines",
+        "space_before": 0,
+        "space_after": 0
+      }
+    },
+    {
+      "style_id": "appendix_body",
+      "custom": true,
+      "builtin_names": {
+        "english": "Appendix Body",
+        "chinese": "附录正文"
+      },
+      "font": {
+        "name_ascii": "Times New Roman",
+        "name_far_east": "宋体",
+        "size": 12,
+        "bold": false,
+        "color": "black",
+        "color_index": "black"
+      },
+      "paragraph": {
+        "alignment": "justify",
+        "outline_level": 10,
+        "first_line_indent_chars": 2,
+        "line_spacing_rule": "1.5_lines",
+        "space_before": 0,
+        "space_after": 0
+      }
     }
   ]
 }
