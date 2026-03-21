@@ -36,12 +36,22 @@ def main():
         doc = word.Documents.Open(output_path)
         style_config_lookup = build_style_config_lookup(config["styles"])
         style_lookup = apply_styles(doc, config["styles"])
-        processed_count = apply_paragraph_styles(doc, style_lookup, style_config_lookup)
+        processed_count, validation_issues, validation_counts = apply_paragraph_styles(
+            doc, style_lookup, style_config_lookup
+        )
 
         doc.Save()
         print(
             f"已更新 {len(config['styles'])} 个样式定义，并处理 {processed_count} 个非空段落: {output_path}"
         )
+        if validation_counts["abstract_count"] == 0 and validation_counts["keywords_count"] == 0:
+            print("未识别到摘要或关键词区块，未执行内容校验。")
+        elif validation_issues:
+            print("检测到以下内容校验问题：")
+            for issue in validation_issues:
+                print(f"- {issue}")
+        else:
+            print("摘要与关键词内容校验通过。")
     finally:
         if doc is not None:
             doc.Close(False)

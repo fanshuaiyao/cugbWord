@@ -141,6 +141,7 @@
     },
     {
       "style_id": "figure_block",
+      "custom": true,
       "builtin_names": {
         "english": "Body Figure",
         "chinese": "正文图片"
@@ -159,6 +160,126 @@
         "first_line_indent_chars": 0,
         "line_spacing_rule": "1.5_lines",
         "space_before": 12,
+        "space_after": 0
+      }
+    },
+    {
+      "style_id": "abstract_title",
+      "custom": true,
+      "builtin_names": {
+        "english": "Abstract Title",
+        "chinese": "中文摘要标题"
+      },
+      "font": {
+        "name_ascii": "Times New Roman",
+        "name_far_east": "黑体",
+        "size": 15,
+        "bold": false,
+        "color": "black",
+        "color_index": "black"
+      },
+      "paragraph": {
+        "alignment": "center",
+        "outline_level": 1,
+        "first_line_indent_chars": 0,
+        "line_spacing_rule": "1.5_lines",
+        "space_before": 0,
+        "space_after": 0
+      }
+    },
+    {
+      "style_id": "abstract_body",
+      "custom": true,
+      "builtin_names": {
+        "english": "Abstract Body",
+        "chinese": "中文摘要正文"
+      },
+      "font": {
+        "name_ascii": "Times New Roman",
+        "name_far_east": "宋体",
+        "size": 12,
+        "bold": false,
+        "color": "black",
+        "color_index": "black"
+      },
+      "paragraph": {
+        "alignment": "justify",
+        "outline_level": 10,
+        "first_line_indent_chars": 2,
+        "line_spacing_rule": "1.5_lines",
+        "space_before": 0,
+        "space_after": 0
+      }
+    },
+    {
+      "style_id": "keywords_line",
+      "custom": true,
+      "builtin_names": {
+        "english": "Keywords Line",
+        "chinese": "关键词行"
+      },
+      "font": {
+        "name_ascii": "Times New Roman",
+        "name_far_east": "宋体",
+        "size": 12,
+        "bold": false,
+        "color": "black",
+        "color_index": "black"
+      },
+      "paragraph": {
+        "alignment": "justify",
+        "outline_level": 10,
+        "first_line_indent_chars": 0,
+        "line_spacing_rule": "1.5_lines",
+        "space_before": 0,
+        "space_after": 0
+      }
+    },
+    {
+      "style_id": "references_title",
+      "custom": true,
+      "builtin_names": {
+        "english": "References Title",
+        "chinese": "参考文献标题"
+      },
+      "font": {
+        "name_ascii": "Times New Roman",
+        "name_far_east": "黑体",
+        "size": 15,
+        "bold": false,
+        "color": "black",
+        "color_index": "black"
+      },
+      "paragraph": {
+        "alignment": "center",
+        "outline_level": 1,
+        "first_line_indent_chars": 0,
+        "line_spacing_rule": "1.5_lines",
+        "space_before": 0,
+        "space_after": 0
+      }
+    },
+    {
+      "style_id": "reference_entry",
+      "custom": true,
+      "builtin_names": {
+        "english": "Reference Entry",
+        "chinese": "参考文献条目"
+      },
+      "font": {
+        "name_ascii": "Times New Roman",
+        "name_far_east": "宋体",
+        "size": 10.5,
+        "bold": false,
+        "color": "black",
+        "color_index": "black"
+      },
+      "paragraph": {
+        "alignment": "justify",
+        "outline_level": 10,
+        "first_line_indent_chars": 0,
+        "line_spacing_rule": "1.5_lines",
+        "space_before": 0,
         "space_after": 0
       }
     }

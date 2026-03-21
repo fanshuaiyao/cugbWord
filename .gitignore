@@ -1,0 +1,9 @@
+# Python 缓存文件
+__pycache__/
+*.py[cod]
+
+# Claude 本地配置
+.claude/settings.local.json
+
+# Word 临时锁文件
+~$*.docx

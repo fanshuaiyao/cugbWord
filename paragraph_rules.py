@@ -67,6 +67,24 @@ def is_figure_caption_paragraph(doc, index, text):
 
 
 
+def is_abstract_title_text(text):
+    """判断文本是否为中文摘要标题。"""
+    return text == "摘要"
+
+
+
+def is_keywords_line_text(text):
+    """判断文本是否为关键词整行。"""
+    return bool(re.match(r"^关键词(?:\s*[：:].*)?$", text))
+
+
+
+def is_references_title_text(text):
+    """判断文本是否为参考文献标题。"""
+    return text == "参考文献"
+
+
+
 def match_heading_style_id(text):
     """根据段落开头内容判断标题样式标识。"""
     for style_id, pattern in HEADING_STYLE_PATTERNS:

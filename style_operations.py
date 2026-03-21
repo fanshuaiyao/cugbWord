@@ -83,7 +83,7 @@ def apply_styles(doc, style_configs):
         style_id = style_config["style_id"]
         builtin_names = style_config["builtin_names"]
 
-        if style_id == "figure_block":
+        if style_config.get("custom", False):
             style = get_or_create_custom_style(doc, builtin_names["chinese"])
             apply_style_config(style, style_config)
             style_lookup[style_id] = style
