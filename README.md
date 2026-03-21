@@ -20,3 +20,10 @@
 如果要新增或调整样式，优先修改 `style_config.json`，不需要改 Python 主流程。
 
 为了兼容不同语言版本的 Word，请为每个内置样式同时提供英文名和中文名。
+
+当前模块分工：
+- `win32com_demo.py`：主流程入口
+- `style_operations.py`：样式定义更新、直接段落格式覆盖
+- `paragraph_utils.py`：段落文本清洗与前后段落访问
+- `paragraph_rules.py`：标题、图注、表注、图片段落识别
+- `paragraph_processing.py`：遍历段落并应用识别结果

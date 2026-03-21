@@ -110,8 +110,8 @@
 程序会优先尝试英文名，找不到时再尝试中文名。
 
 说明：
-- `figure_block` 当前为了复用现有机制，暂时映射到 `Normal / 正文` 这个内置样式对象，再由代码额外覆盖段落对齐、缩进和段前距等效果。
-- 这意味着它是“图片段落格式规则”的一个配置入口，而不是一个独立的 Word 内置样式名。
+- `figure_block` 当前使用独立的自定义段落样式 `正文图片`，由代码在 Word 中获取或创建。
+- 这意味着它是一个独立的图片段落样式入口，不再与 `Normal / 正文` 共用样式对象。
 
 ---
 
@@ -355,8 +355,8 @@
 {
   "style_id": "figure_block",
   "builtin_names": {
-    "english": "Normal",
-    "chinese": "正文"
+    "english": "Body Figure",
+    "chinese": "正文图片"
   },
   "font": {
     "name_ascii": "Times New Roman",
