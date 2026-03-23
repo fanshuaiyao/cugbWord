@@ -73,9 +73,21 @@ def is_abstract_title_text(text):
 
 
 
+def is_english_abstract_title_text(text):
+    """判断文本是否为英文摘要标题。"""
+    return text.lower() == "abstract"
+
+
+
 def is_keywords_line_text(text):
-    """判断文本是否为关键词整行。"""
+    """判断文本是否为中文关键词整行。"""
     return bool(re.match(r"^关键词(?:\s*[：:].*)?$", text))
+
+
+
+def is_english_keywords_line_text(text):
+    """判断文本是否为英文关键词整行。"""
+    return bool(re.match(r"^key\s*words(?:\s*[：:].*)?$", text, re.IGNORECASE))
 
 
 

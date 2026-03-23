@@ -10,6 +10,7 @@
 - `win32com_demo.py`：主流程入口
 - `config_loader.py`：配置读取、字段校验、路径解析
 - `style_operations.py`：Word 样式定义更新、段落直接格式覆盖
+- `page_operations.py`：页面设置、页眉页脚处理
 - `paragraph_rules.py`：标题 / 图注 / 表注 / 图片段落 / 结构标题识别
 - `paragraph_processing.py`：遍历段落、应用样式、执行摘要/关键词校验
 - `paragraph_utils.py`：段落文本清洗、前后段落访问
@@ -31,6 +32,8 @@
 
 ## 样式与识别规则约定
 - `style_config.json` 是样式定义的单一事实来源。
+- 流程控制开关优先放在 `style_config.json` 顶层配置层，不放进单个样式项。
+- 页面级配置优先放在 `style_config.json` 顶层的 `page_setup` / `header_footer`，不要塞进单个段落样式项。
 - 新增或修改 `style_id` 时，必须同步更新 `style_config_说明版.md`。
 - 特殊结构样式优先使用独立样式，不与 `Normal / 正文` 混用。
 - 图片段落必须使用独立样式 `正文图片`，不要和正文混用。
@@ -54,7 +57,10 @@
 ### 论文结构相关
 - 中文摘要标题 `abstract_title`
 - 中文摘要正文 `abstract_body`
-- 关键词行 `keywords_line`
+- 中文关键词行 `keywords_line`
+- 英文摘要标题 `english_abstract_title`
+- 英文摘要正文 `english_abstract_body`
+- 英文关键词行 `english_keywords_line`
 - 参考文献标题 `references_title`
 - 参考文献条目 `reference_entry`
 
@@ -65,6 +71,12 @@
 - 关键词是否使用全角逗号 `，`
 - 关键词末尾是否带标点
 
+### 当前已支持的页面级排版
+- 页边距设置
+- 页眉 / 页脚距离设置
+- 首页不同
+- 页眉 / 页脚样式入口
+
 ## 明确边界
 - 用户没有明确要求时，不主动扩展这些能力：
   - 英文摘要
@@ -72,7 +84,6 @@
   - 附录
   - 致谢
   - 目录
-  - 页眉页脚
   - 页码
   - 公式处理
 - 不主动修改已经确定正确的旧样式；如果需求只影响新结构，就只改新结构。
@@ -103,7 +114,7 @@
   - `~$*.docx`
 
 ## 文档维护约定
-- 当样式能力或识别范围发生变化时，要同步更新：
+- 当样式能力、页面级能力或识别范围发生变化时，要同步更新：
   - `style_config_说明版.md`
   - `README.md`
   - `技术路线.md`（如果阶段状态已经变化）

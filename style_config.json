@@ -1,5 +1,45 @@
 {
-  "document_path": "test/123.docx",
+  "document_path": "test/888.docx",
+  "processing": {
+    "apply_paragraph_styles": true
+  },
+  "page_setup": {
+    "enabled": true,
+    "margins_cm": {
+      "top": 2.5,
+      "bottom": 2.0,
+      "left": 2.5,
+      "right": 2.0
+    },
+    "header_distance_cm": 1.5,
+    "footer_distance_cm": 1.5
+  },
+  "header_footer": {
+    "enabled": true,
+    "different_first_page": true,
+    "header": {
+      "enabled": false,
+      "text": "",
+      "style_ref": "thesis_header"
+    },
+    "footer": {
+      "enabled": false,
+      "text": "",
+      "style_ref": "thesis_footer"
+    },
+    "first_page": {
+      "header": {
+        "enabled": false,
+        "text": "",
+        "style_ref": "thesis_header"
+      },
+      "footer": {
+        "enabled": false,
+        "text": "",
+        "style_ref": "thesis_footer"
+      }
+    }
+  },
   "styles": [
     {
       "style_id": "heading_1",
@@ -236,6 +276,78 @@
       }
     },
     {
+      "style_id": "english_abstract_title",
+      "custom": true,
+      "builtin_names": {
+        "english": "English Abstract Title",
+        "chinese": "英文摘要标题"
+      },
+      "font": {
+        "name_ascii": "Times New Roman",
+        "name_far_east": "黑体",
+        "size": 15,
+        "bold": false,
+        "color": "black",
+        "color_index": "black"
+      },
+      "paragraph": {
+        "alignment": "center",
+        "outline_level": 1,
+        "first_line_indent_chars": 0,
+        "line_spacing_rule": "1.5_lines",
+        "space_before": 0,
+        "space_after": 0
+      }
+    },
+    {
+      "style_id": "english_abstract_body",
+      "custom": true,
+      "builtin_names": {
+        "english": "English Abstract Body",
+        "chinese": "英文摘要正文"
+      },
+      "font": {
+        "name_ascii": "Times New Roman",
+        "name_far_east": "宋体",
+        "size": 12,
+        "bold": false,
+        "color": "black",
+        "color_index": "black"
+      },
+      "paragraph": {
+        "alignment": "justify",
+        "outline_level": 10,
+        "first_line_indent_chars": 2,
+        "line_spacing_rule": "1.5_lines",
+        "space_before": 0,
+        "space_after": 0
+      }
+    },
+    {
+      "style_id": "english_keywords_line",
+      "custom": true,
+      "builtin_names": {
+        "english": "English Keywords Line",
+        "chinese": "英文关键词行"
+      },
+      "font": {
+        "name_ascii": "Times New Roman",
+        "name_far_east": "宋体",
+        "size": 12,
+        "bold": false,
+        "color": "black",
+        "color_index": "black"
+      },
+      "paragraph": {
+        "alignment": "justify",
+        "outline_level": 10,
+        "first_line_indent_chars": 0,
+        "line_spacing_rule": "1.5_lines",
+        "space_before": 0,
+        "space_after": 0
+      }
+    },
+    {
       "style_id": "references_title",
       "custom": true,
       "builtin_names": {
@@ -422,6 +534,54 @@
         "alignment": "justify",
         "outline_level": 10,
         "first_line_indent_chars": 2,
+        "line_spacing_rule": "1.5_lines",
+        "space_before": 0,
+        "space_after": 0
+      }
+    },
+    {
+      "style_id": "thesis_header",
+      "custom": true,
+      "builtin_names": {
+        "english": "Thesis Header",
+        "chinese": "论文页眉"
+      },
+      "font": {
+        "name_ascii": "Times New Roman",
+        "name_far_east": "宋体",
+        "size": 10.5,
+        "bold": false,
+        "color": "black",
+        "color_index": "black"
+      },
+      "paragraph": {
+        "alignment": "center",
+        "outline_level": 10,
+        "first_line_indent_chars": 0,
+        "line_spacing_rule": "1.5_lines",
+        "space_before": 0,
+        "space_after": 0
+      }
+    },
+    {
+      "style_id": "thesis_footer",
+      "custom": true,
+      "builtin_names": {
+        "english": "Thesis Footer",
+        "chinese": "论文页脚"
+      },
+      "font": {
+        "name_ascii": "Times New Roman",
+        "name_far_east": "宋体",
+        "size": 10.5,
+        "bold": false,
+        "color": "black",
+        "color_index": "black"
+      },
+      "paragraph": {
+        "alignment": "center",
+        "outline_level": 10,
+        "first_line_indent_chars": 0,
         "line_spacing_rule": "1.5_lines",
         "space_before": 0,
         "space_after": 0

@@ -6,6 +6,8 @@ from paragraph_rules import (
     is_appendix_title_text,
     is_contents_entry_text,
     is_contents_title_text,
+    is_english_abstract_title_text,
+    is_english_keywords_line_text,
     is_keywords_line_text,
     is_references_title_text,
     match_heading_style_id,
@@ -21,6 +23,9 @@ ABSTRACT_MAX_CHAR_COUNT = 1000
 KEYWORDS_MIN_COUNT = 3
 KEYWORDS_MAX_COUNT = 5
 KEYWORDS_LABEL_PATTERN = re.compile(r"^\s*(关键词\s*[：:])")
+ENGLISH_KEYWORDS_LABEL_PATTERN = re.compile(
+    r"^\s*(key\s*words\s*[：:])", re.IGNORECASE
+)
 KEYWORDS_NON_FULLWIDTH_SEPARATOR_PATTERN = re.compile(r"[,、；;]")
 KEYWORDS_SPLIT_PATTERN = re.compile(r"[，,、；;]")
 KEYWORDS_TRAILING_PUNCTUATION_PATTERN = re.compile(r"[，,、；;。.!！？?：:]$")
@@ -33,10 +38,10 @@ def count_non_whitespace_characters(text):
 
 
 
-def apply_keywords_label_format(paragraph):
-    """将关键词行中的“关键词：”局部设置为加粗。"""
+def apply_label_bold_format(paragraph, label_pattern):
+    """将行首标签局部设置为加粗。"""
     raw_text = paragraph.Range.Text.replace("\r", "").replace("\x07", "")
-    match = KEYWORDS_LABEL_PATTERN.match(raw_text)
+    match = label_pattern.match(raw_text)
     if match is None:
         return
 
@@ -57,6 +62,18 @@ def apply_keywords_label_format(paragraph):
     content_range.End = visible_range.End
     if content_range.Start < content_range.End:
         content_range.Font.Bold = False
+
+
+
+def apply_keywords_label_format(paragraph):
+    """将关键词行中的“关键词：”局部设置为加粗。"""
+    apply_label_bold_format(paragraph, KEYWORDS_LABEL_PATTERN)
+
+
+
+def apply_english_keywords_label_format(paragraph):
+    """将英文关键词行中的“Keywords:”局部设置为加粗。"""
+    apply_label_bold_format(paragraph, ENGLISH_KEYWORDS_LABEL_PATTERN)
 
 
 
@@ -87,6 +104,8 @@ def apply_paragraph_style(paragraph, style_id, style_lookup, style_config_lookup
 
     if style_id == "keywords_line":
         apply_keywords_label_format(paragraph)
+    elif style_id == "english_keywords_line":
+        apply_english_keywords_label_format(paragraph)
 
 
 
@@ -171,10 +190,11 @@ def finalize_current_block(validation_issues, current_block, abstract_state, doc
     abstract_state["range_start"] = None
     abstract_state["range_end"] = None
     abstract_state["body_texts"] = []
+    abstract_state["body_style_id"] = None
 
 
 
-def apply_paragraph_styles(doc, style_lookup, style_config_lookup):
+def apply_paragraph_styles(doc, style_lookup, style_config_lookup, progress_callback=None):
     """遍历文档段落并按识别结果应用对应样式，同时返回内容校验结果。"""
     processed_count = 0
     validation_issues = []
@@ -185,9 +205,11 @@ def apply_paragraph_styles(doc, style_lookup, style_config_lookup):
         "range_start": None,
         "range_end": None,
         "body_texts": [],
+        "body_style_id": None,
     }
+    total_paragraphs = doc.Paragraphs.Count
 
-    for index in range(1, doc.Paragraphs.Count + 1):
+    for index in range(1, total_paragraphs + 1):
         paragraph = doc.Paragraphs(index)
         text = normalize_paragraph_text(paragraph.Range.Text)
         if not text:
@@ -205,7 +227,18 @@ def apply_paragraph_styles(doc, style_lookup, style_config_lookup):
             current_block = "abstract"
             validation_counts["abstract_count"] += 1
             abstract_state["title_index"] = index
+            abstract_state["body_style_id"] = "abstract_body"
             apply_paragraph_style(paragraph, "abstract_title", style_lookup, style_config_lookup)
+            processed_count += 1
+            continue
+
+        if is_english_abstract_title_text(text):
+            finalize_current_block(validation_issues, current_block, abstract_state, doc)
+            current_block = "english_abstract"
+            abstract_state["body_style_id"] = "english_abstract_body"
+            apply_paragraph_style(
+                paragraph, "english_abstract_title", style_lookup, style_config_lookup
+            )
             processed_count += 1
             continue
 
@@ -246,6 +279,15 @@ def apply_paragraph_styles(doc, style_lookup, style_config_lookup):
             processed_count += 1
             continue
 
+        if is_english_keywords_line_text(text):
+            apply_paragraph_style(
+                paragraph, "english_keywords_line", style_lookup, style_config_lookup
+            )
+            finalize_current_block(validation_issues, current_block, abstract_state, doc)
+            current_block = None
+            processed_count += 1
+            continue
+
         if current_block == "contents" and is_contents_entry_text(text):
             apply_paragraph_style(paragraph, "contents_entry", style_lookup, style_config_lookup)
             processed_count += 1
@@ -263,12 +305,18 @@ def apply_paragraph_styles(doc, style_lookup, style_config_lookup):
             finalize_current_block(validation_issues, current_block, abstract_state, doc)
             current_block = None
 
-        if current_block == "abstract":
-            if abstract_state["range_start"] is None:
+        if current_block in {"abstract", "english_abstract"}:
+            if current_block == "abstract" and abstract_state["range_start"] is None:
                 abstract_state["range_start"] = paragraph.Range.Start
-            abstract_state["range_end"] = paragraph.Range.End
-            abstract_state["body_texts"].append(text)
-            apply_paragraph_style(paragraph, "abstract_body", style_lookup, style_config_lookup)
+            if current_block == "abstract":
+                abstract_state["range_end"] = paragraph.Range.End
+                abstract_state["body_texts"].append(text)
+            apply_paragraph_style(
+                paragraph,
+                abstract_state["body_style_id"],
+                style_lookup,
+                style_config_lookup,
+            )
             processed_count += 1
             continue
 
@@ -289,6 +337,11 @@ def apply_paragraph_styles(doc, style_lookup, style_config_lookup):
 
         apply_paragraph_style(paragraph, "normal", style_lookup, style_config_lookup)
         processed_count += 1
+
+        if progress_callback is not None and (
+            index == 1 or index == total_paragraphs or index % 10 == 0
+        ):
+            progress_callback(index, total_paragraphs)
 
     finalize_current_block(validation_issues, current_block, abstract_state, doc)
     return processed_count, validation_issues, validation_counts

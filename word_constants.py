@@ -24,6 +24,12 @@ WD_STYLE_TYPE_PARAGRAPH = 1
 WD_STATISTIC_PAGES = 2
 """Word 统计页数常量值。"""
 
+WD_HEADER_FOOTER_PRIMARY = 1
+"""Word 普通页页眉页脚常量值。"""
+
+WD_HEADER_FOOTER_FIRST_PAGE = 2
+"""Word 首页页眉页脚常量值。"""
+
 ALIGNMENT_MAP = {
     "left": WD_ALIGN_PARAGRAPH_LEFT,
     "center": WD_ALIGN_PARAGRAPH_CENTER,

@@ -2,7 +2,17 @@
   "permissions": {
     "allow": [
       "Bash(git:*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(winget upgrade:*)",
+      "Bash(taskkill /PID 34424 /F)",
+      "Bash(tasklist /FI \"IMAGENAME eq WINWORD.EXE\")",
+      "Bash(powershell -Command \"Stop-Process -Id 34424 -Force; Get-Process WINWORD -ErrorAction SilentlyContinue | Select-Object Id, ProcessName\")",
+      "Bash(powershell -Command \"Get-Process WINWORD -ErrorAction SilentlyContinue | Stop-Process -Force -PassThru | Select-Object Id, ProcessName\")",
+      "Bash(powershell -Command \"Get-Process WINWORD -ErrorAction SilentlyContinue | Format-Table Id, ProcessName -Auto\")",
+      "Bash(powershell -Command \"Get-Process WINWORD -ErrorAction SilentlyContinue | Select-Object Id, ProcessName, MainWindowTitle | Format-Table -Auto\")",
+      "Bash(tasklist)",
+      "Bash(tasklist /v)",
+      "Bash(cmd.exe /c \"tasklist /v | findstr WINWORD\")"
     ]
   }
 }
