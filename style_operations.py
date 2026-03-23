@@ -13,6 +13,7 @@ def apply_style_config(style, style_config):
     style_id = style_config["style_id"]
     font_config = style_config["font"]
     paragraph_config = style_config["paragraph"]
+    paragraph_format = style.ParagraphFormat
 
     style.Font.Name = font_config["name_ascii"]
     style.Font.NameAscii = font_config["name_ascii"]
@@ -29,31 +30,33 @@ def apply_style_config(style, style_config):
         style_id,
     )
 
-    style.ParagraphFormat.Alignment = resolve_enum_value(
+    paragraph_format.Alignment = resolve_enum_value(
         "paragraph.alignment",
         paragraph_config["alignment"],
         ALIGNMENT_MAP,
         style_id,
     )
-    style.ParagraphFormat.OutlineLevel = paragraph_config["outline_level"]
-    style.ParagraphFormat.LeftIndent = 0
-    style.ParagraphFormat.RightIndent = 0
-    style.ParagraphFormat.FirstLineIndent = 0
-    style.ParagraphFormat.CharacterUnitFirstLineIndent = paragraph_config[
+    paragraph_format.OutlineLevel = paragraph_config["outline_level"]
+    paragraph_format.LeftIndent = 0
+    paragraph_format.RightIndent = 0
+    paragraph_format.FirstLineIndent = 0
+    paragraph_format.CharacterUnitLeftIndent = 0
+    paragraph_format.CharacterUnitRightIndent = 0
+    paragraph_format.CharacterUnitFirstLineIndent = paragraph_config[
         "first_line_indent_chars"
     ]
-    style.ParagraphFormat.LineSpacingRule = resolve_enum_value(
+    paragraph_format.LineSpacingRule = resolve_enum_value(
         "paragraph.line_spacing_rule",
         paragraph_config.get("line_spacing_rule", "1.5_lines"),
         LINE_SPACING_RULE_MAP,
         style_id,
     )
-    style.ParagraphFormat.SpaceBeforeAuto = False
-    style.ParagraphFormat.SpaceAfterAuto = False
-    style.ParagraphFormat.LineUnitBefore = 0
-    style.ParagraphFormat.LineUnitAfter = 0
-    style.ParagraphFormat.SpaceBefore = paragraph_config.get("space_before", 0)
-    style.ParagraphFormat.SpaceAfter = paragraph_config.get("space_after", 0)
+    paragraph_format.SpaceBeforeAuto = False
+    paragraph_format.SpaceAfterAuto = False
+    paragraph_format.LineUnitBefore = 0
+    paragraph_format.LineUnitAfter = 0
+    paragraph_format.SpaceBefore = paragraph_config.get("space_before", 0)
+    paragraph_format.SpaceAfter = paragraph_config.get("space_after", 0)
 
 
 
@@ -83,7 +86,15 @@ def get_or_create_custom_style(doc, style_name):
 def apply_styles(doc, style_configs):
     """遍历配置并获取多个 Word 样式对象。"""
     style_lookup = {}
-    for style_config in style_configs:
+
+    # Word 内置标题 1~4 当前仍基于 Normal / 正文，必须先写 normal，
+    # 再写标题样式，才能把标题自己的首行缩进覆盖到样式定义上。
+    ordered_style_configs = sorted(
+        style_configs,
+        key=lambda style_config: 0 if style_config["style_id"] == "normal" else 1,
+    )
+
+    for style_config in ordered_style_configs:
         style_id = style_config["style_id"]
         builtin_names = style_config["builtin_names"]
 
@@ -100,6 +111,7 @@ def apply_styles(doc, style_configs):
         )
         apply_style_config(style, style_config)
         style_lookup[style_id] = style
+
     return style_lookup
 
 
