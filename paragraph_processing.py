@@ -40,10 +40,23 @@ def apply_keywords_label_format(paragraph):
     if match is None:
         return
 
+    visible_range = paragraph.Range.Duplicate
+    visible_range.End = max(visible_range.Start, visible_range.End - 1)
+    visible_range.Font.Bold = False
+
+    label_start = visible_range.Start + match.start(1)
+    label_end = label_start + len(match.group(1))
+
     label_range = paragraph.Range.Duplicate
-    label_range.Start = label_range.Start + match.start(1)
-    label_range.End = label_range.Start + len(match.group(1))
+    label_range.Start = label_start
+    label_range.End = label_end
     label_range.Font.Bold = True
+
+    content_range = paragraph.Range.Duplicate
+    content_range.Start = label_end
+    content_range.End = visible_range.End
+    if content_range.Start < content_range.End:
+        content_range.Font.Bold = False
 
 
 
@@ -69,6 +82,7 @@ def apply_paragraph_style(paragraph, style_id, style_lookup, style_config_lookup
         )
         return
 
+    apply_direct_font_format(paragraph, style_config)
     apply_direct_paragraph_format(paragraph, style_config)
 
     if style_id == "keywords_line":

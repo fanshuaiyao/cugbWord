@@ -9,6 +9,13 @@ from style_operations import apply_styles, build_style_config_lookup
 
 
 DEFAULT_CONFIG_FILE = "style_config.json"
+OUTPUT_SUFFIX = "_处理后"
+
+
+def build_output_path(input_path):
+    """根据输入文档路径生成固定的处理后副本路径。"""
+    base_path, extension = os.path.splitext(input_path)
+    return f"{base_path}{OUTPUT_SUFFIX}{extension}"
 
 
 def main():
@@ -21,9 +28,11 @@ def main():
     config_path = os.path.join(script_dir, DEFAULT_CONFIG_FILE)
     config = load_style_config(config_path)
 
-    output_path = resolve_path(script_dir, config["document_path"])
-    if not os.path.exists(output_path):
-        raise FileNotFoundError(f"目标文档不存在: {output_path}")
+    input_path = resolve_path(script_dir, config["document_path"])
+    if not os.path.exists(input_path):
+        raise FileNotFoundError(f"目标文档不存在: {input_path}")
+
+    output_path = build_output_path(input_path)
 
     pythoncom.CoInitialize()
     word = None
@@ -33,14 +42,14 @@ def main():
         word.Visible = False
         word.DisplayAlerts = 0
 
-        doc = word.Documents.Open(output_path)
+        doc = word.Documents.Open(input_path)
         style_config_lookup = build_style_config_lookup(config["styles"])
         style_lookup = apply_styles(doc, config["styles"])
         processed_count, validation_issues, validation_counts = apply_paragraph_styles(
             doc, style_lookup, style_config_lookup
         )
 
-        doc.Save()
+        doc.SaveAs2(output_path)
         print(
             f"已更新 {len(config['styles'])} 个样式定义，并处理 {processed_count} 个非空段落: {output_path}"
         )

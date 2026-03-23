@@ -48,6 +48,10 @@ def apply_style_config(style, style_config):
         LINE_SPACING_RULE_MAP,
         style_id,
     )
+    style.ParagraphFormat.SpaceBeforeAuto = False
+    style.ParagraphFormat.SpaceAfterAuto = False
+    style.ParagraphFormat.LineUnitBefore = 0
+    style.ParagraphFormat.LineUnitAfter = 0
     style.ParagraphFormat.SpaceBefore = paragraph_config.get("space_before", 0)
     style.ParagraphFormat.SpaceAfter = paragraph_config.get("space_after", 0)
 
@@ -156,6 +160,10 @@ def apply_direct_paragraph_format(paragraph, style_config, space_before_override
         LINE_SPACING_RULE_MAP,
         style_id,
     )
+    paragraph_format.SpaceBeforeAuto = False
+    paragraph_format.SpaceAfterAuto = False
+    paragraph_format.LineUnitBefore = 0
+    paragraph_format.LineUnitAfter = 0
     paragraph_format.SpaceBefore = (
         space_before_override
         if space_before_override is not None
