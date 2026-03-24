@@ -204,6 +204,30 @@
       }
     },
     {
+      "style_id": "table_body",
+      "custom": true,
+      "builtin_names": {
+        "english": "Table Body",
+        "chinese": "表格正文"
+      },
+      "font": {
+        "name_ascii": "Times New Roman",
+        "name_far_east": "宋体",
+        "size": 10.5,
+        "bold": false,
+        "color": "black",
+        "color_index": "black"
+      },
+      "paragraph": {
+        "alignment": "center",
+        "outline_level": 10,
+        "first_line_indent_chars": 0,
+        "line_spacing_rule": "1.5_lines",
+        "space_before": 0,
+        "space_after": 0
+      }
+    },
+    {
       "style_id": "abstract_title",
       "custom": true,
       "builtin_names": {

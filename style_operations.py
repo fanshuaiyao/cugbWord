@@ -8,12 +8,18 @@ from word_constants import (
 )
 
 
+HEADING_STYLE_IDS = {"heading_1", "heading_2", "heading_3", "heading_4"}
+
+
 def apply_style_config(style, style_config):
     """将单个样式配置应用到 Word 样式对象。"""
     style_id = style_config["style_id"]
     font_config = style_config["font"]
     paragraph_config = style_config["paragraph"]
     paragraph_format = style.ParagraphFormat
+
+    if style_id in HEADING_STYLE_IDS:
+        style.BaseStyle = ""
 
     style.Font.Name = font_config["name_ascii"]
     style.Font.NameAscii = font_config["name_ascii"]
@@ -87,14 +93,7 @@ def apply_styles(doc, style_configs):
     """遍历配置并获取多个 Word 样式对象。"""
     style_lookup = {}
 
-    # Word 内置标题 1~4 当前仍基于 Normal / 正文，必须先写 normal，
-    # 再写标题样式，才能把标题自己的首行缩进覆盖到样式定义上。
-    ordered_style_configs = sorted(
-        style_configs,
-        key=lambda style_config: 0 if style_config["style_id"] == "normal" else 1,
-    )
-
-    for style_config in ordered_style_configs:
+    for style_config in style_configs:
         style_id = style_config["style_id"]
         builtin_names = style_config["builtin_names"]
 
