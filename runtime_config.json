@@ -1,0 +1,7 @@
+{
+  "document_path": "test/888.docx",
+  "style_template": "cugb",
+  "processing": {
+    "apply_paragraph_styles": true
+  }
+}

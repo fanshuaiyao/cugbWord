@@ -4,13 +4,13 @@ import sys
 import pythoncom
 from win32com.client import DispatchEx
 
-from config_loader import load_style_config, resolve_path
+from config_loader import load_execution_config, resolve_path
 from page_operations import apply_header_footer, apply_page_setup
 from paragraph_processing import apply_paragraph_styles
 from style_operations import apply_styles, build_style_config_lookup
 
 
-DEFAULT_CONFIG_FILE = "style_config.json"
+DEFAULT_CONFIG_FILE = "runtime_config.json"
 OUTPUT_SUFFIX = "_处理后"
 
 
@@ -41,8 +41,8 @@ def main():
     """
     script_dir = os.path.dirname(os.path.abspath(__file__))
     config_path = os.path.join(script_dir, DEFAULT_CONFIG_FILE)
-    print("[1/7] 正在读取配置...", flush=True)
-    config = load_style_config(config_path)
+    print("[1/7] 正在读取运行配置与样式模板...", flush=True)
+    config = load_execution_config(script_dir, config_path)
 
     input_path = resolve_path(script_dir, config["document_path"])
     if not os.path.exists(input_path):

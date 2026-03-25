@@ -1,8 +1,4 @@
 {
-  "document_path": "test/888.docx",
-  "processing": {
-    "apply_paragraph_styles": true
-  },
   "page_setup": {
     "enabled": true,
     "margins_cm": {
@@ -565,10 +561,9 @@
     },
     {
       "style_id": "thesis_header",
-      "custom": true,
       "builtin_names": {
-        "english": "Thesis Header",
-        "chinese": "论文页眉"
+        "english": "Header",
+        "chinese": "页眉"
       },
       "font": {
         "name_ascii": "Times New Roman",
@@ -589,10 +584,9 @@
     },
     {
       "style_id": "thesis_footer",
-      "custom": true,
       "builtin_names": {
-        "english": "Thesis Footer",
-        "chinese": "论文页脚"
+        "english": "Footer",
+        "chinese": "页脚"
       },
       "font": {
         "name_ascii": "Times New Roman",

@@ -1,4 +1,4 @@
-"""提供样式配置文件的读取、校验和路径解析能力。"""
+"""提供运行配置、样式模板的读取、校验和路径解析能力。"""
 
 import json
 import os
@@ -7,6 +7,7 @@ from word_constants import ALIGNMENT_MAP, COLOR_INDEX_MAP, COLOR_MAP, LINE_SPACI
 
 
 DEFAULT_PROCESSING_CONFIG = {"apply_paragraph_styles": True}
+DEFAULT_RUNTIME_CONFIG = {"style_template": "cugb"}
 DEFAULT_PAGE_SETUP_CONFIG = {
     "enabled": False,
     "margins_cm": {"top": 2.5, "bottom": 2.0, "left": 2.5, "right": 2.0},
@@ -42,50 +43,21 @@ DEFAULT_HEADER_FOOTER_CONFIG = {
 
 
 def require_non_empty_string(value, field_name):
-    """校验配置字段是否为非空字符串。
-
-    Args:
-        value: 待校验的字段值。
-        field_name: 字段名称，用于生成错误提示。
-
-    Raises:
-        ValueError: 当字段值不是非空字符串时抛出。
-    """
+    """校验配置字段是否为非空字符串。"""
     if not isinstance(value, str) or not value.strip():
         raise ValueError(f"{field_name} 必须是非空字符串")
 
 
 
 def require_number(value, field_name):
-    """校验配置字段是否为数字。
-
-    Args:
-        value: 待校验的字段值。
-        field_name: 字段名称，用于生成错误提示。
-
-    Raises:
-        ValueError: 当字段值不是数字时抛出。
-    """
+    """校验配置字段是否为数字。"""
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         raise ValueError(f"{field_name} 必须是数字")
 
 
 
 def resolve_enum_value(field_name, value, value_map, style_id):
-    """将配置中的枚举字符串解析为 Word 所需的常量值。
-
-    Args:
-        field_name: 当前解析的字段名称。
-        value: 配置中的枚举字符串。
-        value_map: 枚举字符串到常量值的映射表。
-        style_id: 当前样式标识，用于生成错误提示。
-
-    Returns:
-        对应的 Word 常量值。
-
-    Raises:
-        ValueError: 当配置值不在映射表中时抛出。
-    """
+    """将配置中的枚举字符串解析为 Word 所需的常量值。"""
     if value not in value_map:
         allowed_values = ", ".join(value_map.keys())
         raise ValueError(
@@ -115,34 +87,14 @@ def validate_header_footer_block(config_block, block_path, style_ids):
 
 
 
-def validate_style_config(config):
-    """校验样式配置结构和关键字段是否合法。
-
-    Args:
-        config: 从 JSON 文件读取出的配置对象。
-
-    Raises:
-        ValueError: 当配置结构、字段类型或枚举值不合法时抛出。
-    """
+def validate_style_template(config):
+    """校验样式模板结构和关键字段是否合法。"""
     if not isinstance(config, dict):
-        raise ValueError("样式配置必须是 JSON 对象")
-
-    document_path = config.get("document_path")
-    require_non_empty_string(document_path, "document_path")
+        raise ValueError("样式模板必须是 JSON 对象")
 
     styles = config.get("styles")
     if not isinstance(styles, list) or not styles:
         raise ValueError("styles 必须是非空列表")
-
-    processing = config.get("processing")
-    if processing is not None:
-        if not isinstance(processing, dict):
-            raise ValueError("processing 必须是对象")
-        apply_paragraph_styles = processing.get("apply_paragraph_styles")
-        if apply_paragraph_styles is not None and not isinstance(
-            apply_paragraph_styles, bool
-        ):
-            raise ValueError("processing.apply_paragraph_styles 必须是布尔值")
 
     style_ids = set()
     for index, style_config in enumerate(styles):
@@ -286,11 +238,51 @@ def validate_style_config(config):
 
 
 
+def validate_processing_config(processing):
+    """校验流程配置是否合法。"""
+    if processing is None:
+        return
+    if not isinstance(processing, dict):
+        raise ValueError("processing 必须是对象")
+    apply_paragraph_styles = processing.get("apply_paragraph_styles")
+    if apply_paragraph_styles is not None and not isinstance(
+        apply_paragraph_styles, bool
+    ):
+        raise ValueError("processing.apply_paragraph_styles 必须是布尔值")
+
+
+
+def validate_runtime_config(config):
+    """校验运行配置结构和关键字段是否合法。"""
+    if not isinstance(config, dict):
+        raise ValueError("运行配置必须是 JSON 对象")
+
+    document_path = config.get("document_path")
+    require_non_empty_string(document_path, "document_path")
+
+    style_template = config.get("style_template")
+    if style_template is not None:
+        require_non_empty_string(style_template, "style_template")
+
+    validate_processing_config(config.get("processing"))
+
+
+
 def normalize_processing_config(config):
     """为流程配置补齐默认值。"""
     processing = config.get("processing") or {}
     normalized_processing = {**DEFAULT_PROCESSING_CONFIG, **processing}
     config["processing"] = normalized_processing
+    return config
+
+
+
+def normalize_runtime_config(config):
+    """为运行配置补齐默认值。"""
+    config = normalize_processing_config(config)
+    config["style_template"] = config.get("style_template") or DEFAULT_RUNTIME_CONFIG[
+        "style_template"
+    ]
     return config
 
 
@@ -349,44 +341,65 @@ def normalize_header_footer_config(config):
 
 
 
-def load_style_config(config_path):
-    """读取并校验样式配置文件。
-
-    Args:
-        config_path: 样式配置 JSON 文件路径。
-
-    Returns:
-        校验通过后的配置对象。
-
-    Raises:
-        FileNotFoundError: 当配置文件不存在时抛出。
-        ValueError: 当配置文件不是合法 JSON 或配置内容不合法时抛出。
-    """
+def load_json_config(config_path, config_label):
+    """读取 JSON 配置文件。"""
     try:
         with open(config_path, "r", encoding="utf-8") as config_file:
-            config = json.load(config_file)
+            return json.load(config_file)
     except FileNotFoundError as exc:
-        raise FileNotFoundError(f"样式配置文件不存在: {config_path}") from exc
+        raise FileNotFoundError(f"{config_label}不存在: {config_path}") from exc
     except json.JSONDecodeError as exc:
-        raise ValueError(f"样式配置文件不是合法的 JSON: {config_path}") from exc
+        raise ValueError(f"{config_label}不是合法的 JSON: {config_path}") from exc
 
-    validate_style_config(config)
-    config = normalize_processing_config(config)
+
+
+def load_runtime_config(config_path):
+    """读取并校验运行配置文件。"""
+    config = load_json_config(config_path, "运行配置文件")
+    validate_runtime_config(config)
+    return normalize_runtime_config(config)
+
+
+
+def load_style_template(config_path):
+    """读取并校验样式模板文件。"""
+    config = load_json_config(config_path, "样式模板文件")
+    validate_style_template(config)
     config = normalize_page_setup_config(config)
     return normalize_header_footer_config(config)
 
 
 
+def resolve_style_template_path(base_dir, style_template):
+    """将模板标识或路径解析为样式模板文件绝对路径。"""
+    if style_template.lower().endswith(".json") or any(
+        separator in style_template for separator in ("/", "\\")
+    ):
+        return resolve_path(base_dir, style_template)
+    return resolve_path(base_dir, os.path.join("style", f"{style_template}.json"))
+
+
+
+def merge_execution_config(runtime_config, template_config):
+    """将运行配置与模板配置合并为主流程使用的统一配置。"""
+    merged_config = dict(template_config)
+    merged_config["document_path"] = runtime_config["document_path"]
+    merged_config["processing"] = runtime_config["processing"]
+    return merged_config
+
+
+
+def load_execution_config(base_dir, runtime_config_path):
+    """读取运行配置与样式模板，并合并为主流程使用的统一配置。"""
+    runtime_config = load_runtime_config(runtime_config_path)
+    template_path = resolve_style_template_path(base_dir, runtime_config["style_template"])
+    template_config = load_style_template(template_path)
+    return merge_execution_config(runtime_config, template_config)
+
+
+
 def resolve_path(base_dir, target_path):
-    """将相对路径解析为绝对路径。
-
-    Args:
-        base_dir: 作为基准的目录路径。
-        target_path: 目标路径，可以是相对路径或绝对路径。
-
-    Returns:
-        解析后的绝对路径。
-    """
+    """将相对路径解析为绝对路径。"""
     if os.path.isabs(target_path):
         return target_path
     return os.path.abspath(os.path.join(base_dir, target_path))

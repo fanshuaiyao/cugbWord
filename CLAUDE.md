@@ -2,20 +2,21 @@
 
 ## 项目目标
 - 本项目用于自动化处理中地大（北京）毕业论文的 Word 排版。
-- 核心技术路线是：`Python + win32com + style_config.json`。
+- 核心技术路线是：`Python + win32com + runtime_config.json + style/*.json`。
 - 当前阶段优先做：论文结构识别、段落套样式、基础内容校验。
 - 暂时不要把项目当成通用 Word 工具，优先围绕“毕业论文格式化”推进。
 
 ## 当前代码结构
 - `win32com_demo.py`：主流程入口
-- `config_loader.py`：配置读取、字段校验、路径解析
+- `config_loader.py`：运行配置与模板配置读取、字段校验、路径解析
 - `style_operations.py`：Word 样式定义更新、段落直接格式覆盖
 - `page_operations.py`：页面设置、页眉页脚处理
 - `paragraph_rules.py`：标题 / 图注 / 表注 / 图片段落 / 结构标题识别
 - `paragraph_processing.py`：遍历段落、应用样式、执行摘要/关键词校验
 - `paragraph_utils.py`：段落文本清洗、前后段落访问
-- `style_config.json`：样式配置主文件
-- `style_config_说明版.md`：样式配置说明文档
+- `runtime_config.json`：运行配置主文件
+- `style/`：学校样式模板目录
+- `style_config_说明版.md`：样式模板说明文档
 
 ## 我们的协作约定
 - 修改代码前，先读取相关文件，理解现有实现后再改。
@@ -27,13 +28,13 @@
   - 图注 / 表注
   - 图片段落
   - 摘要 / 关键词 / 参考文献
-- 如果一个需求可以通过配置解决，优先改 `style_config.json`，不要先写死在 Python 里。
+- 如果一个需求可以通过配置解决，优先改当前使用的模板配置文件，不要先写死在 Python 里。
 - 只有配置无法表达的细节，才补 Python 逻辑，例如关键词行中 `关键词：` 的局部加粗。
 
 ## 样式与识别规则约定
-- `style_config.json` 是样式定义的单一事实来源。
-- 流程控制开关优先放在 `style_config.json` 顶层配置层，不放进单个样式项。
-- 页面级配置优先放在 `style_config.json` 顶层的 `page_setup` / `header_footer`，不要塞进单个段落样式项。
+- 当前选中的 `style/*.json` 模板文件是样式定义的单一事实来源。
+- 流程控制开关优先放在 `runtime_config.json` 顶层配置层，不放进单个样式项。
+- 页面级配置优先放在 `style/*.json` 顶层的 `page_setup` / `header_footer`，不要塞进单个段落样式项。
 - 新增或修改 `style_id` 时，必须同步更新 `style_config_说明版.md`。
 - 特殊结构样式优先使用独立样式，不与 `Normal / 正文` 混用。
 - 图片段落必须使用独立样式 `正文图片`，不要和正文混用。
@@ -77,6 +78,11 @@
 - 首页不同
 - 页眉 / 页脚样式入口
 
+### 当前已支持的模板化能力
+- 运行配置与学校模板分离
+- `style/` 目录下按学校存放模板 JSON
+- 通过 `runtime_config.json` 选择当前模板
+
 ## 明确边界
 - 用户没有明确要求时，不主动扩展这些能力：
   - 英文摘要
@@ -93,7 +99,7 @@
 
 ## 验证要求
 - 改 Python 代码后，至少做一次静态编译检查，例如 `python -m py_compile ...`。
-- 改 `style_config.json` 后，至少验证一次 JSON 能正常解析。
+- 改 `runtime_config.json` 或 `style/*.json` 后，至少验证一次 JSON 能正常解析。
 - 如果当前环境无法真实运行 Word / `pythoncom`，要明确说明限制。
 - 不要把静态检查说成真实 Word 实机验证。
 - 改识别规则后，要优先检查标题、正文、图注表注、图片段落是否回归。
