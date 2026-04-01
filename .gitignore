@@ -7,3 +7,6 @@ __pycache__/
 
 # Word 临时锁文件
 ~$*.docx
+
+# 测试文档目录
+test/
