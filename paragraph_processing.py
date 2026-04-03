@@ -77,6 +77,13 @@ def apply_english_keywords_label_format(paragraph):
 
 
 
+def clear_direct_formatting(paragraph):
+    """清除段落的直接格式（字符和段落级别）。"""
+    rng = paragraph.Range
+    # 重置字符直接格式
+    rng.Font.Reset()
+
+
 def apply_paragraph_style(paragraph, style_id, style_lookup, style_config_lookup):
     """将指定样式应用到段落。"""
     style = style_lookup.get(style_id)
@@ -84,6 +91,10 @@ def apply_paragraph_style(paragraph, style_id, style_lookup, style_config_lookup
     if style is None or style_config is None:
         raise ValueError(f"段落匹配到未配置的样式: {style_id}")
 
+    # 先重置段落格式，再应用样式定义，最后根据配置覆盖字体与段落格式，
+    # 以确保样式定义的统一性和内容格式的准确性
+    clear_direct_formatting(paragraph)
+    paragraph.Range.ParagraphFormat.Reset()
     paragraph.Range.Style = style.NameLocal
 
     if style_id == "figure_block":
