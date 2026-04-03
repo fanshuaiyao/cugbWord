@@ -1,11 +1,7 @@
 {
-  "document_path": "E:\\桌面\\claude\\cugbWord\\test\\one.docx",
+  "document_path": "E:\\桌面\\claude\\cugbWord\\test\\1111.docx",
   "style_template": "cugb",
   "processing": {
-    "apply_paragraph_styles": true,
-    "toc": {
-      "enabled": true,
-      "update_mode": "full"
-    }
+    "apply_paragraph_styles": true
   }
 }
