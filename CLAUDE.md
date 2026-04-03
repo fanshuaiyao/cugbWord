@@ -9,11 +9,12 @@
 ## 当前代码结构
 - `win32com_demo.py`：主流程入口
 - `config_loader.py`：运行配置与模板配置读取、字段校验、路径解析
-- `style_operations.py`：Word 样式定义更新、段落直接格式覆盖
+- `style_operations.py`：Word 样式定义更新、段落直接格式覆盖、后续段落样式设置
 - `page_operations.py`：页面设置、页眉页脚处理
 - `paragraph_rules.py`：标题 / 图注 / 表注 / 图片段落 / 结构标题识别
-- `paragraph_processing.py`：遍历段落、应用样式、执行摘要/关键词校验
+- `paragraph_processing.py`：遍历段落、应用样式、执行摘要/关键词校验、清除直接格式
 - `paragraph_utils.py`：段落文本清洗、前后段落访问
+- `word_constants.py`：Word COM 常量定义与枚举映射
 - `runtime_config.json`：运行配置主文件
 - `style/`：学校样式模板目录
 - `style_config_说明版.md`：样式模板说明文档
@@ -40,6 +41,7 @@
 - 图片段落必须使用独立样式 `正文图片`，不要和正文混用。
 - 新增结构类样式时，优先使用 `custom: true` 走自定义样式创建流程。
 - 调整识别逻辑时，要保持现有识别优先级不被破坏。
+- **后续段落样式**：所有样式默认应设置 `next_style: normal`，确保回车后自动切换到正文。
 
 ## 当前已经落地的能力
 ### 标题识别
@@ -55,7 +57,7 @@
 - 图片所在段落识别
 - 图片段落独立样式处理
 
-### 论文结构相关
+### 论文结构相关（已全部支持）
 - 中文摘要标题 `abstract_title`
 - 中文摘要正文 `abstract_body`
 - 中文关键词行 `keywords_line`
@@ -64,6 +66,12 @@
 - 英文关键词行 `english_keywords_line`
 - 参考文献标题 `references_title`
 - 参考文献条目 `reference_entry`
+- 目录标题 `contents_title`
+- 目录条目 `contents_entry`
+- 致谢标题 `acknowledgements_title`
+- 致谢正文 `acknowledgements_body`
+- 附录标题 `appendix_title`
+- 附录正文 `appendix_body`
 
 ### 当前已支持的内容校验
 - 摘要字数是否在 `800~1000`
@@ -77,24 +85,25 @@
 - 页眉 / 页脚距离设置
 - 首页不同
 - 页眉 / 页脚样式入口
+- **后续段落样式**：所有样式回车后自动切换为正文
 
 ### 当前已支持的模板化能力
 - 运行配置与学校模板分离
 - `style/` 目录下按学校存放模板 JSON
 - 通过 `runtime_config.json` 选择当前模板
+- 已支持学校模板：地大北京 `cugb`、广州南方学院 `gznfxy`
 
 ## 明确边界
 - 用户没有明确要求时，不主动扩展这些能力：
-  - 英文摘要
-  - 英文关键词
-  - 附录
-  - 致谢
-  - 目录
-  - 页码
-  - 公式处理
+  - 页码自动生成与对齐
+  - 目录自动生成与更新
+  - 公式编号与排版
+  - 图表自动编号
+  - 参考文献自动格式化（如 GB/T 7714 格式校验）
 - 不主动修改已经确定正确的旧样式；如果需求只影响新结构，就只改新结构。
-- 不为了“代码更优雅”去破坏现有可工作的 Word 行为。
+- 不为了”代码更优雅”去破坏现有可工作的 Word 行为。
 - 如果某次改动可能影响样式继承或段落直接格式覆盖，要优先考虑回归风险。
+- **样式继承处理**：应用样式前先清除直接格式（`Font.Reset()` + `ParagraphFormat.Reset()`），确保样式定义生效。
 - 用户以前明确强调过：**不要动老样式**。这条要长期遵守。
 
 ## 验证要求
