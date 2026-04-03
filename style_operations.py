@@ -111,6 +111,13 @@ def apply_styles(doc, style_configs):
         apply_style_config(style, style_config)
         style_lookup[style_id] = style
 
+    # 统一设置后续段落样式
+    for style_config in style_configs:
+        style_id = style_config["style_id"]
+        next_style_id = style_config.get("next_style")
+        if next_style_id and next_style_id in style_lookup:
+            style_lookup[style_id].NextParagraphStyle = style_lookup[next_style_id]
+
     return style_lookup
 
 

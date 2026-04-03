@@ -43,6 +43,7 @@
         "english": "Heading 1",
         "chinese": "标题 1"
       },
+      "next_style": "normal",
       "font": {
         "name_ascii": "Times New Roman",
         "name_far_east": "黑体",
@@ -66,6 +67,7 @@
         "english": "Heading 2",
         "chinese": "标题 2"
       },
+      "next_style": "normal",
       "font": {
         "name_ascii": "Times New Roman",
         "name_far_east": "黑体",
@@ -89,6 +91,7 @@
         "english": "Heading 3",
         "chinese": "标题 3"
       },
+      "next_style": "normal",
       "font": {
         "name_ascii": "Times New Roman",
         "name_far_east": "黑体",
@@ -112,6 +115,7 @@
         "english": "Heading 4",
         "chinese": "标题 4"
       },
+      "next_style": "normal",
       "font": {
         "name_ascii": "Times New Roman",
         "name_far_east": "黑体",
@@ -135,6 +139,7 @@
         "english": "Normal",
         "chinese": "正文"
       },
+      "next_style": "normal",
       "font": {
         "name_ascii": "Times New Roman",
         "name_far_east": "宋体",
@@ -158,6 +163,7 @@
         "english": "Caption",
         "chinese": "题注"
       },
+      "next_style": "normal",
       "font": {
         "name_ascii": "Times New Roman",
         "name_far_east": "宋体",
@@ -182,6 +188,7 @@
         "english": "Body Figure",
         "chinese": "正文图片"
       },
+      "next_style": "normal",
       "font": {
         "name_ascii": "Times New Roman",
         "name_far_east": "宋体",
@@ -206,6 +213,7 @@
         "english": "Table Body",
         "chinese": "表格正文"
       },
+      "next_style": "normal",
       "font": {
         "name_ascii": "Times New Roman",
         "name_far_east": "宋体",
@@ -230,6 +238,7 @@
         "english": "Abstract Title",
         "chinese": "中文摘要标题"
       },
+      "next_style": "normal",
       "font": {
         "name_ascii": "Times New Roman",
         "name_far_east": "黑体",
@@ -254,6 +263,7 @@
         "english": "Abstract Body",
         "chinese": "中文摘要正文"
       },
+      "next_style": "normal",
       "font": {
         "name_ascii": "Times New Roman",
         "name_far_east": "宋体",
@@ -278,6 +288,7 @@
         "english": "Keywords Line",
         "chinese": "关键词行"
       },
+      "next_style": "normal",
       "font": {
         "name_ascii": "Times New Roman",
         "name_far_east": "宋体",
@@ -302,6 +313,7 @@
         "english": "English Abstract Title",
         "chinese": "英文摘要标题"
       },
+      "next_style": "normal",
       "font": {
         "name_ascii": "Times New Roman",
         "name_far_east": "黑体",
@@ -326,6 +338,7 @@
         "english": "English Abstract Body",
         "chinese": "英文摘要正文"
       },
+      "next_style": "normal",
       "font": {
         "name_ascii": "Times New Roman",
         "name_far_east": "宋体",
@@ -350,6 +363,7 @@
         "english": "English Keywords Line",
         "chinese": "英文关键词行"
       },
+      "next_style": "normal",
       "font": {
         "name_ascii": "Times New Roman",
         "name_far_east": "宋体",
@@ -374,6 +388,7 @@
         "english": "References Title",
         "chinese": "参考文献标题"
       },
+      "next_style": "normal",
       "font": {
         "name_ascii": "Times New Roman",
         "name_far_east": "黑体",
@@ -398,6 +413,7 @@
         "english": "Reference Entry",
         "chinese": "参考文献条目"
       },
+      "next_style": "normal",
       "font": {
         "name_ascii": "Times New Roman",
         "name_far_east": "宋体",
@@ -422,6 +438,7 @@
         "english": "Contents Title",
         "chinese": "目录标题"
       },
+      "next_style": "normal",
       "font": {
         "name_ascii": "Times New Roman",
         "name_far_east": "黑体",
@@ -446,6 +463,7 @@
         "english": "Contents Entry",
         "chinese": "目录条目"
       },
+      "next_style": "normal",
       "font": {
         "name_ascii": "Times New Roman",
         "name_far_east": "宋体",
@@ -470,6 +488,7 @@
         "english": "Acknowledgements Title",
         "chinese": "致谢标题"
       },
+      "next_style": "normal",
       "font": {
         "name_ascii": "Times New Roman",
         "name_far_east": "黑体",
@@ -494,6 +513,7 @@
         "english": "Acknowledgements Body",
         "chinese": "致谢正文"
       },
+      "next_style": "normal",
       "font": {
         "name_ascii": "Times New Roman",
         "name_far_east": "宋体",
@@ -518,6 +538,7 @@
         "english": "Appendix Title",
         "chinese": "附录标题"
       },
+      "next_style": "normal",
       "font": {
         "name_ascii": "Times New Roman",
         "name_far_east": "黑体",
@@ -542,6 +563,7 @@
         "english": "Appendix Body",
         "chinese": "附录正文"
       },
+      "next_style": "normal",
       "font": {
         "name_ascii": "Times New Roman",
         "name_far_east": "宋体",
@@ -565,6 +587,7 @@
         "english": "Header",
         "chinese": "页眉"
       },
+      "next_style": "normal",
       "font": {
         "name_ascii": "Times New Roman",
         "name_far_east": "宋体",
@@ -588,6 +611,7 @@
         "english": "Footer",
         "chinese": "页脚"
       },
+      "next_style": "normal",
       "font": {
         "name_ascii": "Times New Roman",
         "name_far_east": "宋体",
