@@ -8,6 +8,7 @@ from config_loader import load_execution_config, resolve_path
 from page_operations import apply_header_footer, apply_page_setup
 from paragraph_processing import apply_paragraph_styles
 from style_operations import apply_styles, build_style_config_lookup
+from toc_operations import process_toc
 
 
 DEFAULT_CONFIG_FILE = "runtime_config.json"
@@ -79,6 +80,18 @@ def main():
             )
         else:
             print("[6/7] 已按配置跳过段落匹配与内容校验...", flush=True)
+
+        # 目录处理：必须在段落样式应用完成后执行
+        print("[6.5/7] 正在处理目录...", flush=True)
+        toc_config = config.get("processing", {}).get("toc", {})
+        if toc_config.get("enabled", True):
+            success, action, message = process_toc(doc, toc_config)
+            if success:
+                print(f"  ✓ {message}")
+            else:
+                print(f"  ⚠ {message}")
+        else:
+            print("  - 已按配置跳过目录处理")
 
         print(f"[7/7] 正在保存处理后文档: {output_path}", flush=True)
         doc.SaveAs2(output_path)
