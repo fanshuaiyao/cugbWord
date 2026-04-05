@@ -5,7 +5,9 @@
     "apply_paragraph_styles": true,
     "toc": {
       "enabled": true,
-      "update_mode": "full"
+      "update_mode": "full",
+      "add_section_break_after": true,
+      "force_replace_existing": true
     }
   }
 }

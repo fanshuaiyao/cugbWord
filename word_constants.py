@@ -30,6 +30,15 @@ WD_HEADER_FOOTER_PRIMARY = 1
 WD_HEADER_FOOTER_FIRST_PAGE = 2
 """Word 首页页眉页脚常量值。"""
 
+WD_SECTION_BREAK_NEXT_PAGE = 2
+"""Word 下一页分节符常量值。"""
+
+WD_SECTION_BREAK_CONTINUOUS = 3
+"""Word 连续分节符常量值。"""
+
+WD_BREAK_PAGE = 7
+"""Word 分页符常量值。"""
+
 ALIGNMENT_MAP = {
     "left": WD_ALIGN_PARAGRAPH_LEFT,
     "center": WD_ALIGN_PARAGRAPH_CENTER,
