@@ -63,6 +63,8 @@ def apply_style_config(style, style_config):
     paragraph_format.LineUnitAfter = 0
     paragraph_format.SpaceBefore = paragraph_config.get("space_before", 0)
     paragraph_format.SpaceAfter = paragraph_config.get("space_after", 0)
+    paragraph_format.PageBreakBefore = bool(paragraph_config.get("page_break_before", False))
+    paragraph_format.PageBreakBefore = bool(paragraph_config.get("page_break_before", False))
 
 
 
@@ -188,3 +190,4 @@ def apply_direct_paragraph_format(paragraph, style_config, space_before_override
         else paragraph_config.get("space_before", 0)
     )
     paragraph_format.SpaceAfter = paragraph_config.get("space_after", 0)
+    paragraph_format.PageBreakBefore = bool(paragraph_config.get("page_break_before", False))

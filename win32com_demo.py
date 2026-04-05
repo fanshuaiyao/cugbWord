@@ -8,6 +8,8 @@ from config_loader import load_execution_config, resolve_path
 from page_operations import apply_header_footer, apply_page_setup
 from paragraph_processing import apply_paragraph_styles
 from style_operations import apply_styles, build_style_config_lookup
+from toc_operations import process_toc
+from structural_operations import remove_empty_paragraphs
 
 
 DEFAULT_CONFIG_FILE = "runtime_config.json"
@@ -61,6 +63,11 @@ def main():
 
         print(f"[3/7] 正在打开文档: {input_path}", flush=True)
         doc = word.Documents.Open(input_path)
+
+        print("[3.5/7] 正在清理文档结构（删除多余空行）...", flush=True)
+        removed_count = remove_empty_paragraphs(doc)
+        print(f"  ✓ 删除了 {removed_count} 个无用空行", flush=True)
+
         print(f"[4/7] 正在更新 {len(config['styles'])} 个样式定义...", flush=True)
         style_config_lookup = build_style_config_lookup(config["styles"])
         style_lookup = apply_styles(doc, config["styles"])
@@ -79,6 +86,20 @@ def main():
             )
         else:
             print("[6/7] 已按配置跳过段落匹配与内容校验...", flush=True)
+
+        # 目录处理：必须在段落样式应用完成后执行
+        print("[6.5/7] 正在处理目录...", flush=True)
+        toc_config = config.get("processing", {}).get("toc", {})
+        if toc_config.get("enabled", True):
+            success, action, message = process_toc(
+                doc, toc_config, style_lookup, style_config_lookup
+            )
+            if success:
+                print(f"  ✓ {message}")
+            else:
+                print(f"  ⚠ {message}")
+        else:
+            print("  - 已按配置跳过目录处理")
 
         print(f"[7/7] 正在保存处理后文档: {output_path}", flush=True)
         doc.SaveAs2(output_path)

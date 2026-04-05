@@ -97,11 +97,6 @@ def is_references_title_text(text):
 
 
 
-def is_contents_title_text(text):
-    """判断文本是否为目录标题。"""
-    return text == "目录"
-
-
 
 def is_acknowledgements_title_text(text):
     """判断文本是否为致谢标题。"""
@@ -113,17 +108,6 @@ def is_appendix_title_text(text):
     """判断文本是否为附录标题。"""
     return bool(re.match(r"^附录(?:\s*[A-Z]|[一二三四五六七八九十]+)?$", text))
 
-
-
-def is_contents_entry_text(text):
-    """保守判断文本是否像目录条目。"""
-    if not text:
-        return False
-    if re.search(r"(?:\.{2,}|·{2,}|…{2,}|\t)\s*\d+$", text):
-        return True
-    if re.match(r"^(?:第?[一二三四五六七八九十百千万\d]+[章节]|[一二三四五六七八九十百千万]+、|\d+(?:\.\d+)*(?:\.)?)\s*.+\s+\d+$", text):
-        return True
-    return False
 
 
 

@@ -6,7 +6,7 @@ import os
 from word_constants import ALIGNMENT_MAP, COLOR_INDEX_MAP, COLOR_MAP, LINE_SPACING_RULE_MAP
 
 
-DEFAULT_PROCESSING_CONFIG = {"apply_paragraph_styles": True}
+DEFAULT_PROCESSING_CONFIG = {"apply_paragraph_styles": True, "toc": {"enabled": True, "update_mode": "full"}}
 DEFAULT_RUNTIME_CONFIG = {"style_template": "cugb"}
 DEFAULT_PAGE_SETUP_CONFIG = {
     "enabled": False,
@@ -249,6 +249,18 @@ def validate_processing_config(processing):
         apply_paragraph_styles, bool
     ):
         raise ValueError("processing.apply_paragraph_styles 必须是布尔值")
+
+    # 校验 toc 配置
+    toc = processing.get("toc")
+    if toc is not None:
+        if not isinstance(toc, dict):
+            raise ValueError("processing.toc 必须是对象")
+        enabled = toc.get("enabled")
+        if enabled is not None and not isinstance(enabled, bool):
+            raise ValueError("processing.toc.enabled 必须是布尔值")
+        update_mode = toc.get("update_mode")
+        if update_mode is not None and update_mode not in ("full", "page_numbers_only"):
+            raise ValueError("processing.toc.update_mode 必须是 'full' 或 'page_numbers_only'")
 
 
 

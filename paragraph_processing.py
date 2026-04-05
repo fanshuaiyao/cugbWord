@@ -4,8 +4,6 @@ from paragraph_rules import (
     is_abstract_title_text,
     is_acknowledgements_title_text,
     is_appendix_title_text,
-    is_contents_entry_text,
-    is_contents_title_text,
     is_english_abstract_title_text,
     is_english_keywords_line_text,
     is_keywords_line_text,
@@ -260,13 +258,6 @@ def apply_paragraph_styles(doc, style_lookup, style_config_lookup, progress_call
             processed_count += 1
             continue
 
-        if is_contents_title_text(text):
-            finalize_current_block(validation_issues, current_block, abstract_state, doc)
-            current_block = "contents"
-            apply_paragraph_style(paragraph, "contents_title", style_lookup, style_config_lookup)
-            processed_count += 1
-            continue
-
         if is_acknowledgements_title_text(text):
             finalize_current_block(validation_issues, current_block, abstract_state, doc)
             current_block = "acknowledgements"
@@ -299,11 +290,6 @@ def apply_paragraph_styles(doc, style_lookup, style_config_lookup, progress_call
             processed_count += 1
             continue
 
-        if current_block == "contents" and is_contents_entry_text(text):
-            apply_paragraph_style(paragraph, "contents_entry", style_lookup, style_config_lookup)
-            processed_count += 1
-            continue
-
         heading_style_id = match_heading_style_id(text)
         if heading_style_id is not None:
             finalize_current_block(validation_issues, current_block, abstract_state, doc)
@@ -311,10 +297,6 @@ def apply_paragraph_styles(doc, style_lookup, style_config_lookup, progress_call
             apply_paragraph_style(paragraph, heading_style_id, style_lookup, style_config_lookup)
             processed_count += 1
             continue
-
-        if current_block == "contents":
-            finalize_current_block(validation_issues, current_block, abstract_state, doc)
-            current_block = None
 
         if current_block in {"abstract", "english_abstract"}:
             if current_block == "abstract" and abstract_state["range_start"] is None:
