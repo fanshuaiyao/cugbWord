@@ -33,23 +33,14 @@ def remove_existing_tocs(doc):
         bool: 是否删除了目录。
     """
     removed = False
-    while doc.TablesOfContents.Count > 0:
-        toc = doc.TablesOfContents(1)
-        # 获取目录的范围
-        toc_range = toc.Range
-        start_pos = toc_range.Start
-        end_pos = toc_range.End
-
-        # 删除目录对象本身
-        toc.Delete()
-
-        # 删除目录所占用的文本范围
+    for i in range(doc.TablesOfContents.Count, 0, -1):
+        toc = doc.TablesOfContents(i)
         try:
-            deletion_range = doc.Range(start_pos, end_pos)
-            deletion_range.Delete()
+            toc.Range.Delete()
+            removed = True
         except Exception:
-            pass  # 范围可能已无效，忽略
-        removed = True
+            toc.Delete()
+            removed = True
     return removed
 
 
@@ -64,13 +55,8 @@ def insert_section_break_after_range(doc, range_obj, break_type=WD_SECTION_BREAK
     Returns:
         Section: 新创建的分节对象。
     """
-    # 确保范围折叠到末尾
     range_obj.Collapse(0)  # wdCollapseEnd = 0
-
-    # 在当前位置插入分节符
     range_obj.InsertBreak(break_type)
-
-    # 返回新创建的分节
     return doc.Sections(doc.Sections.Count)
 
 
@@ -173,13 +159,18 @@ def insert_toc(doc, range_obj, upper_level=1, lower_level=4):
     )
 
     # 强制在底层域代码中追加 \h 开关以启用超链接
-    doc.ActiveWindow.View.ShowFieldCodes = False # 确保不是处于域代码显示状态
-    if toc.Range.Fields.Count > 0:
-        field = toc.Range.Fields(1)
-        code_text = field.Code.Text
-        if r"\h" not in code_text:
-            field.Code.Text = code_text + r" \h \z"
-            toc.Update()
+    view = doc.ActiveWindow.View
+    original_show_codes = view.ShowFieldCodes
+    try:
+        view.ShowFieldCodes = False
+        if toc.Range.Fields.Count > 0:
+            field = toc.Range.Fields(1)
+            code_text = field.Code.Text
+            if r"\h" not in code_text:
+                field.Code.Text = code_text + r" \h \z"
+                toc.Update()
+    finally:
+        view.ShowFieldCodes = original_show_codes
 
     return toc
 
