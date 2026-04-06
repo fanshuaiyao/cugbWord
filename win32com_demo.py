@@ -9,7 +9,7 @@ from page_operations import apply_header_footer, apply_page_setup, apply_page_nu
 from paragraph_processing import apply_paragraph_styles
 from style_operations import apply_styles, build_style_config_lookup
 from toc_operations import process_toc
-from structural_operations import remove_empty_paragraphs
+from structural_operations import normalize_document_structure
 
 
 DEFAULT_CONFIG_FILE = "runtime_config.json"
@@ -80,9 +80,15 @@ def main():
         print(f"[3/7] 正在打开文档: {input_path}", flush=True)
         doc = word.Documents.Open(input_path)
 
-        print("[3.5/7] 正在清理文档结构（删除多余空行）...", flush=True)
-        removed_count = remove_empty_paragraphs(doc)
-        print(f"  [OK] 删除了 {removed_count} 个无用空行", flush=True)
+        print("[3.5/7] 正在清理文档结构（删除手工分页/分节与多余空行）...", flush=True)
+        cleanup_stats = normalize_document_structure(doc)
+        print(
+            "  [OK] 已删除 "
+            f"{cleanup_stats['manual_page_breaks_removed']} 个手工分页符，"
+            f"{cleanup_stats['manual_section_breaks_removed']} 个手工分节符，"
+            f"{cleanup_stats['empty_paragraphs_removed']} 个无用空行",
+            flush=True,
+        )
 
         print(f"[4/7] 正在更新 {len(config['styles'])} 个样式定义...", flush=True)
         style_config_lookup = build_style_config_lookup(config["styles"])
