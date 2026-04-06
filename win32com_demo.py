@@ -5,7 +5,7 @@ import pythoncom
 from win32com.client import DispatchEx
 
 from config_loader import load_execution_config, resolve_path
-from page_operations import apply_header_footer, apply_page_setup
+from page_operations import apply_header_footer, apply_page_setup, apply_page_numbering
 from paragraph_processing import apply_paragraph_styles
 from style_operations import apply_styles, build_style_config_lookup
 from toc_operations import process_toc
@@ -14,6 +14,21 @@ from structural_operations import remove_empty_paragraphs
 
 DEFAULT_CONFIG_FILE = "runtime_config.json"
 OUTPUT_SUFFIX = "_处理后"
+
+
+def configure_console_output():
+    """尽量让 Windows 控制台稳定输出 UTF-8 中文。"""
+    if hasattr(sys.stdout, "reconfigure"):
+        try:
+            sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            pass
+    if hasattr(sys.stderr, "reconfigure"):
+        try:
+            sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            pass
+
 
 
 def build_output_path(input_path):
@@ -41,6 +56,7 @@ def main():
     该方法会加载 JSON 配置、打开目标 Word 文档、更新样式定义、
     应用页面设置和页眉页脚，再按段落内容识别标题层级并套用对应样式，最后保存结果。
     """
+    configure_console_output()
     script_dir = os.path.dirname(os.path.abspath(__file__))
     config_path = os.path.join(script_dir, DEFAULT_CONFIG_FILE)
     print("[1/7] 正在读取运行配置与样式模板...", flush=True)
@@ -66,7 +82,7 @@ def main():
 
         print("[3.5/7] 正在清理文档结构（删除多余空行）...", flush=True)
         removed_count = remove_empty_paragraphs(doc)
-        print(f"  ✓ 删除了 {removed_count} 个无用空行", flush=True)
+        print(f"  [OK] 删除了 {removed_count} 个无用空行", flush=True)
 
         print(f"[4/7] 正在更新 {len(config['styles'])} 个样式定义...", flush=True)
         style_config_lookup = build_style_config_lookup(config["styles"])
@@ -74,7 +90,6 @@ def main():
 
         print("[5/7] 正在应用页面设置...", flush=True)
         apply_page_setup(doc, config["page_setup"])
-        apply_header_footer(doc, config["header_footer"], style_lookup, style_config_lookup)
 
         processed_count = 0
         validation_issues = []
@@ -95,11 +110,15 @@ def main():
                 doc, toc_config, style_lookup, style_config_lookup
             )
             if success:
-                print(f"  ✓ {message}")
+                print(f"  [OK] {message}")
             else:
-                print(f"  ⚠ {message}")
+                print(f"  [WARN] {message}")
         else:
             print("  - 已按配置跳过目录处理")
+
+        print("[6.8/7] 正在应用页眉页脚与页码...", flush=True)
+        apply_header_footer(doc, config["header_footer"], style_lookup, style_config_lookup)
+        apply_page_numbering(doc, config["page_numbering"])
 
         print(f"[7/7] 正在保存处理后文档: {output_path}", flush=True)
         doc.SaveAs2(output_path)

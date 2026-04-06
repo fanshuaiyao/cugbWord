@@ -20,11 +20,11 @@
 1. 读取 `runtime_config.json`
 2. 读取 `style_template`
 3. 定位到对应的 `style/*.json`
-4. 读取 `page_setup` 和 `header_footer`
+4. 读取 `page_setup`、`header_footer` 和 `page_numbering`
 5. 打开对应的 Word 文档
 6. 读取 `styles` 里的样式定义
 7. 先更新 Word 内置样式和自定义样式本身
-8. 再应用页面设置与页眉页脚
+8. 再应用页面设置、页眉页脚和页码
 9. 最后根据运行配置中的开关决定是否继续做段落匹配
 
 注意：
@@ -75,6 +75,27 @@
       }
     }
   },
+  "page_numbering": {
+    "enabled": true,
+    "sections": [
+      {
+        "section_index": 1,
+        "enabled": true,
+        "show_in_footer": true,
+        "restart_at": null,
+        "number_style": "upper_roman",
+        "different_first_page": true
+      },
+      {
+        "section_index": 2,
+        "enabled": true,
+        "show_in_footer": true,
+        "restart_at": 1,
+        "number_style": "arabic",
+        "different_first_page": false
+      }
+    ]
+  },
   "styles": [
     { ... }
   ]
@@ -87,6 +108,7 @@
 |---|---|---|
 | `page_setup` | 页面设置配置。当前用于统一页边距和页眉页脚距离。 | `{ "enabled": true, ... }` |
 | `header_footer` | 页眉页脚配置。当前用于首页不同与页眉页脚样式入口。 | `{ "enabled": true, ... }` |
+| `page_numbering` | 页码配置。当前用于按节设置罗马数字 / 阿拉伯数字、是否重新编号、某节是否首页不同。 | `{ "enabled": true, ... }` |
 | `styles` | 样式配置列表。每一项定义一个 Word 内置样式或自定义段落样式。 | 24 个样式项 |
 
 ### 运行配置补充说明
@@ -129,6 +151,24 @@
 | `header_footer.first_page.footer.enabled` | 是否写入首页页脚内容。 | `false` |
 | `header_footer.first_page.footer.text` | 首页页脚文本。 | `""` |
 | `header_footer.first_page.footer.style_ref` | 首页页脚引用的样式 `style_id`。 | `thesis_footer` |
+
+### page_numbering 字段说明
+
+| 字段 | 含义 | 默认值 |
+|---|---|---|
+| `page_numbering.enabled` | 是否启用页码处理。 | `false` |
+| `page_numbering.sections` | 按节配置页码规则的列表。 | `[]` |
+| `page_numbering.sections[].section_index` | 目标节序号，从 1 开始。 | 必填 |
+| `page_numbering.sections[].enabled` | 是否启用该节页码配置。 | `true` |
+| `page_numbering.sections[].show_in_footer` | 是否在该节普通页脚插入页码。 | `true` |
+| `page_numbering.sections[].restart_at` | 该节是否重新编号；`null` 表示延续，数字表示从该值开始。 | `null` |
+| `page_numbering.sections[].number_style` | 页码样式。当前支持 `arabic`、`lower_roman`、`upper_roman`。 | `arabic` |
+| `page_numbering.sections[].different_first_page` | 是否为该节单独设置首页不同；适合封面所在节。 | `null` |
+
+说明：
+- `section_index: 1` 通常对应封面、摘要、目录等前置部分。
+- `section_index: 2` 通常对应目录后的正文节。
+- 如果第一节第一页是封面，建议把第一节配置为 `different_first_page: true`，这样封面不显示页码，后续前置页再按罗马数字编号。
 
 ---
 
@@ -310,6 +350,8 @@
 - 是否启用首页不同
 - 非首页和首页分别使用哪个样式
 - 某个页眉或页脚当前是否写入固定文本
+- 某一节页码是否使用罗马数字或阿拉伯数字
+- 某一节是否从 1 重新编号
 
 ---
 
@@ -382,7 +424,8 @@
 3. `runtime_config.json` 中 `processing.apply_paragraph_styles: false` 时，程序只会更新样式定义和页面设置，不会继续执行段落匹配和摘要/关键词内容校验
 4. `page_setup.margins_cm` 中未显式写出的边距字段会回退到默认值
 5. `header_footer.header`、`header_footer.footer`、`header_footer.first_page.header`、`header_footer.first_page.footer` 都必须引用已在 `styles` 中定义的 `style_id`
-6. 当前页眉页脚留空时，程序会清空对应区域内容，不会顺带生成页码
+6. 当前页眉页脚留空时，程序会清空对应区域内容，不会顺带生成固定文本页脚
+7. 页码是否生成由 `page_numbering` 独立控制，不再依赖 `header_footer.footer.text`
 7. `size` 现在必须写数字 pt，不能直接写 `小四`
 8. `alignment` 目前只支持：
    - `left`

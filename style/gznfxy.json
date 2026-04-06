@@ -36,6 +36,10 @@
       }
     }
   },
+  "page_numbering": {
+    "enabled": false,
+    "sections": []
+  },
   "styles": [
     {
       "style_id": "heading_1",

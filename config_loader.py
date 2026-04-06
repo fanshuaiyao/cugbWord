@@ -3,7 +3,13 @@
 import json
 import os
 
-from word_constants import ALIGNMENT_MAP, COLOR_INDEX_MAP, COLOR_MAP, LINE_SPACING_RULE_MAP
+from word_constants import (
+    ALIGNMENT_MAP,
+    COLOR_INDEX_MAP,
+    COLOR_MAP,
+    LINE_SPACING_RULE_MAP,
+    PAGE_NUMBER_STYLE_MAP,
+)
 
 
 DEFAULT_PROCESSING_CONFIG = {"apply_paragraph_styles": True, "toc": {"enabled": True, "update_mode": "full"}}
@@ -39,6 +45,10 @@ DEFAULT_HEADER_FOOTER_CONFIG = {
             "style_ref": "thesis_footer",
         },
     },
+}
+DEFAULT_PAGE_NUMBERING_CONFIG = {
+    "enabled": False,
+    "sections": [],
 }
 
 
@@ -84,6 +94,68 @@ def validate_header_footer_block(config_block, block_path, style_ids):
     text = config_block.get("text", "")
     if not isinstance(text, str):
         raise ValueError(f"header_footer.{block_path}.text 必须是字符串")
+
+
+
+def validate_page_numbering_config(page_numbering):
+    """校验页码配置块。"""
+    if not isinstance(page_numbering, dict):
+        raise ValueError("page_numbering 必须是对象")
+    enabled = page_numbering.get("enabled")
+    if enabled is not None and not isinstance(enabled, bool):
+        raise ValueError("page_numbering.enabled 必须是布尔值")
+    sections = page_numbering.get("sections")
+    if sections is not None:
+        if not isinstance(sections, list):
+            raise ValueError("page_numbering.sections 必须是数组")
+        for index, section_config in enumerate(sections):
+            if not isinstance(section_config, dict):
+                raise ValueError(f"page_numbering.sections[{index}] 必须是对象")
+            section_index = section_config.get("section_index")
+            if isinstance(section_index, bool) or not isinstance(section_index, int):
+                raise ValueError(
+                    f"page_numbering.sections[{index}].section_index 必须是整数"
+                )
+            if section_index <= 0:
+                raise ValueError(
+                    f"page_numbering.sections[{index}].section_index 必须大于 0"
+                )
+            item_enabled = section_config.get("enabled")
+            if item_enabled is not None and not isinstance(item_enabled, bool):
+                raise ValueError(
+                    f"page_numbering.sections[{index}].enabled 必须是布尔值"
+                )
+            show_in_footer = section_config.get("show_in_footer")
+            if show_in_footer is not None and not isinstance(show_in_footer, bool):
+                raise ValueError(
+                    f"page_numbering.sections[{index}].show_in_footer 必须是布尔值"
+                )
+            show_on_first_page = section_config.get("show_on_first_page")
+            if show_on_first_page is not None and not isinstance(show_on_first_page, bool):
+                raise ValueError(
+                    f"page_numbering.sections[{index}].show_on_first_page 必须是布尔值"
+                )
+            number_style = section_config.get("number_style", "arabic")
+            if not isinstance(number_style, str) or number_style not in PAGE_NUMBER_STYLE_MAP:
+                allowed_values = ", ".join(PAGE_NUMBER_STYLE_MAP.keys())
+                raise ValueError(
+                    f"page_numbering.sections[{index}].number_style 配置无效: {number_style}，可选值为: {allowed_values}"
+                )
+            restart_at = section_config.get("restart_at")
+            if restart_at is not None:
+                if isinstance(restart_at, bool) or not isinstance(restart_at, int):
+                    raise ValueError(
+                        f"page_numbering.sections[{index}].restart_at 必须是整数或 null"
+                    )
+                if restart_at < 0:
+                    raise ValueError(
+                        f"page_numbering.sections[{index}].restart_at 必须大于等于 0"
+                    )
+            different_first_page = section_config.get("different_first_page")
+            if different_first_page is not None and not isinstance(different_first_page, bool):
+                raise ValueError(
+                    f"page_numbering.sections[{index}].different_first_page 必须是布尔值"
+                )
 
 
 
@@ -236,6 +308,10 @@ def validate_style_template(config):
                 style_ids,
             )
 
+    page_numbering = config.get("page_numbering")
+    if page_numbering is not None:
+        validate_page_numbering_config(page_numbering)
+
 
 
 def validate_processing_config(processing):
@@ -353,6 +429,31 @@ def normalize_header_footer_config(config):
 
 
 
+def normalize_page_numbering_config(config):
+    """为页码配置补齐默认值。"""
+    page_numbering = config.get("page_numbering") or {}
+    normalized_sections = []
+    for section_config in page_numbering.get("sections") or []:
+        normalized_sections.append(
+            {
+                "enabled": True,
+                "show_in_footer": True,
+                "show_on_first_page": False,
+                "number_style": "arabic",
+                "restart_at": None,
+                "different_first_page": None,
+                **section_config,
+            }
+        )
+    config["page_numbering"] = {
+        **DEFAULT_PAGE_NUMBERING_CONFIG,
+        **page_numbering,
+        "sections": normalized_sections,
+    }
+    return config
+
+
+
 def load_json_config(config_path, config_label):
     """读取 JSON 配置文件。"""
     try:
@@ -378,7 +479,8 @@ def load_style_template(config_path):
     config = load_json_config(config_path, "样式模板文件")
     validate_style_template(config)
     config = normalize_page_setup_config(config)
-    return normalize_header_footer_config(config)
+    config = normalize_header_footer_config(config)
+    return normalize_page_numbering_config(config)
 
 
 

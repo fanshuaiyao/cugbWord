@@ -39,6 +39,18 @@ WD_SECTION_BREAK_CONTINUOUS = 3
 WD_BREAK_PAGE = 7
 """Word 分页符常量值。"""
 
+WD_PAGE_NUMBER_ALIGNMENT_CENTER = 1
+"""Word 页码居中对齐常量值。"""
+
+WD_PAGE_NUMBER_STYLE_ARABIC = 0
+"""Word 阿拉伯数字页码样式常量值。"""
+
+WD_PAGE_NUMBER_STYLE_UPPERCASE_ROMAN = 1
+"""Word 大写罗马数字页码样式常量值。"""
+
+WD_PAGE_NUMBER_STYLE_LOWERCASE_ROMAN = 2
+"""Word 小写罗马数字页码样式常量值。"""
+
 ALIGNMENT_MAP = {
     "left": WD_ALIGN_PARAGRAPH_LEFT,
     "center": WD_ALIGN_PARAGRAPH_CENTER,
@@ -60,3 +72,10 @@ COLOR_INDEX_MAP = {
     "black": WD_COLOR_INDEX_BLACK,
 }
 """字体颜色索引字符串到 Word 常量值的映射。"""
+
+PAGE_NUMBER_STYLE_MAP = {
+    "arabic": WD_PAGE_NUMBER_STYLE_ARABIC,
+    "upper_roman": WD_PAGE_NUMBER_STYLE_UPPERCASE_ROMAN,
+    "lower_roman": WD_PAGE_NUMBER_STYLE_LOWERCASE_ROMAN,
+}
+"""页码样式字符串到 Word 常量值的映射。"""

@@ -1,7 +1,12 @@
 """处理 Word 文档的页面设置与页眉页脚。"""
 
 from style_operations import apply_direct_font_format, apply_direct_paragraph_format
-from word_constants import WD_HEADER_FOOTER_FIRST_PAGE, WD_HEADER_FOOTER_PRIMARY
+from word_constants import (
+    PAGE_NUMBER_STYLE_MAP,
+    WD_HEADER_FOOTER_FIRST_PAGE,
+    WD_HEADER_FOOTER_PRIMARY,
+    WD_PAGE_NUMBER_ALIGNMENT_CENTER,
+)
 
 
 
@@ -100,3 +105,42 @@ def apply_header_footer(doc, header_footer_config, style_lookup, style_config_lo
                 style_lookup,
                 style_config_lookup,
             )
+
+
+
+def apply_page_numbering(doc, page_numbering_config):
+    """按配置对指定节应用页码格式。"""
+    if not page_numbering_config["enabled"]:
+        return
+
+    for section_config in page_numbering_config["sections"]:
+        if not section_config["enabled"] or not section_config["show_in_footer"]:
+            continue
+
+        section_index = section_config["section_index"]
+        if section_index > doc.Sections.Count:
+            continue
+
+        section = doc.Sections(section_index)
+        different_first_page = section_config.get("different_first_page")
+        if different_first_page is not None:
+            section.PageSetup.DifferentFirstPageHeaderFooter = different_first_page
+
+        footer = section.Footers(WD_HEADER_FOOTER_PRIMARY)
+        footer.LinkToPrevious = False
+        page_numbers = footer.PageNumbers
+        while page_numbers.Count > 0:
+            page_numbers(1).Delete()
+
+        page_numbers.NumberStyle = PAGE_NUMBER_STYLE_MAP[section_config["number_style"]]
+        page_numbers.Add(
+            PageNumberAlignment=WD_PAGE_NUMBER_ALIGNMENT_CENTER,
+            FirstPage=section_config["show_on_first_page"],
+        )
+
+        restart_at = section_config.get("restart_at")
+        if restart_at is None:
+            page_numbers.RestartNumberingAtSection = False
+        else:
+            page_numbers.RestartNumberingAtSection = True
+            page_numbers.StartingNumber = restart_at

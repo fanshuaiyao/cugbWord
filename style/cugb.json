@@ -36,6 +36,29 @@
       }
     }
   },
+  "page_numbering": {
+    "enabled": true,
+    "sections": [
+      {
+        "section_index": 1,
+        "enabled": true,
+        "show_in_footer": true,
+        "show_on_first_page": false,
+        "restart_at": 0,
+        "number_style": "upper_roman",
+        "different_first_page": true
+      },
+      {
+        "section_index": 2,
+        "enabled": true,
+        "show_in_footer": true,
+        "show_on_first_page": true,
+        "restart_at": 1,
+        "number_style": "arabic",
+        "different_first_page": false
+      }
+    ]
+  },
   "styles": [
     {
       "style_id": "heading_1",
